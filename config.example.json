@@ -1,0 +1,93 @@
+{
+  "ownerName": "Your Name",
+  "monitoredChats": [
+    "Chat name 1",
+    "Chat name 2",
+    "Chat name 3"
+  ],
+  "matchMode": "contains",
+  "matchAnyIfEmpty": false,
+  "keywords": [
+    "lab",
+    "incharge",
+    "in-charge",
+    "load",
+    "workload",
+    "syllabus",
+    "exam",
+    "examination",
+    "datesheet",
+    "date sheet",
+    "sessional",
+    "meeting",
+    "asd",
+    "ashish",
+    "submission",
+    "attendance",
+    "defaulter",
+    "marks",
+    "result",
+    "circular",
+    "notice",
+    "urgent",
+    "timetable",
+    "time table",
+    "duty",
+    "proforma",
+    "assignment"
+  ],
+  "ignoreCasualPhrases": [
+    "good morning",
+    "gm",
+    "good evening",
+    "ge",
+    "good night",
+    "gn",
+    "happy birthday",
+    "happy new year",
+    "congratulations",
+    "congrats",
+    "thank you",
+    "thanks",
+    "thx",
+    "welcome",
+    "ok",
+    "okay",
+    "k",
+    "done sir",
+    "done ma'am",
+    "noted sir",
+    "noted ma'am",
+    "sure sir",
+    "sure ma'am",
+    "yes sir",
+    "yes ma'am",
+    "ok sir",
+    "ok ma'am"
+  ],
+  "downloadDocuments": true,
+  "supportedDocumentMimeTypes": [
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "text/csv",
+    "text/plain"
+  ],
+  "storage": {
+    "documentsDir": "~/Academic-DPG/Department Desk/Notices",
+    "actionChecklistFile": "~/Academic-DPG/Department Desk/Notices/ACTION_CHECKLIST.md",
+    "logFile": "./data/notices_log.json"
+  },
+  "notifications": {
+    "enabled": true,
+    "sound": "Hero",
+    "speakNotice": false
+  },
+  "puppeteer": {
+    "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "headless": true
+  }
+}

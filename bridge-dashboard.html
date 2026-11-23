@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FacultySync</title>
+<style>
+:root{
+  --ink:#12306B; --muted:#5F749C; --faint:#93A5C4; --line:#DCE8F8;
+  --blue:#1F6FEB; --blue-d:#1458C9; --sky:#E6F1FF; --sky-2:#D3E7FF;
+  --card:#FFFFFF;
+  --wa:#22B866; --wa-soft:#DFF7EA;
+  --gm:#FF6B6B; --gm-soft:#FFE7E5;
+  --ol:#1F6FEB; --ol-soft:#E1EDFF;
+  --file:#FF9A3D; --file-soft:#FFF0DC;
+  --purple:#8B6CF0; --purple-soft:#EEE8FF;
+  --yellow:#FFC53D; --red:#E8475A; --red-soft:#FFE6EA;
+  --shadow:0 2px 4px rgba(31,111,235,.06),0 12px 30px rgba(31,111,235,.10);
+}
+*{box-sizing:border-box;margin:0}
+body{color:var(--ink);font:14px/1.5 ui-rounded,"SF Pro Rounded","Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:radial-gradient(900px 500px at 0% -10%,#CFE6FF,transparent 60%),radial-gradient(800px 500px at 100% 0%,#E9E1FF,transparent 55%),linear-gradient(#EEF6FF,#F7FBFF)}
+button{font:inherit;color:inherit;cursor:pointer}
+code{background:var(--sky);padding:1px 7px;border-radius:7px;font-size:12px}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr) 310px;gap:22px;max-width:1380px;margin:0 auto;padding:22px}
+
+/* sidebar */
+.side{position:sticky;top:22px;align-self:start;display:flex;flex-direction:column;gap:16px;height:calc(100vh - 44px)}
+.logo{display:flex;align-items:center;gap:11px;padding:6px 8px}
+.logo .m{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,#3B8BFF,#1F6FEB);display:grid;place-items:center;box-shadow:0 6px 14px rgba(31,111,235,.35)}
+.logo svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.logo b{font-size:18px;display:block;line-height:1.1}
+.logo small{font-size:11px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;color:var(--muted);font-weight:600;text-decoration:none;transition:.15s}
+.nav a:hover{background:rgba(255,255,255,.7);color:var(--ink)}
+.nav a.on{background:#fff;color:var(--blue);box-shadow:var(--shadow)}
+.nav i{font-style:normal;font-size:18px;width:22px;text-align:center}
+.nav .cnt{margin-left:auto;background:var(--blue);color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;font-weight:700}
+.grow{flex:1}
+.warn{background:linear-gradient(160deg,#FFF6D8,#FFE9B8);border-radius:20px;padding:16px;position:relative;box-shadow:var(--shadow)}
+.warn b{display:block;margin-bottom:4px}
+.warn p{font-size:12.5px;color:#7A5A12;line-height:1.45}
+.warn .x{position:absolute;right:10px;top:8px;border:0;background:none;font-size:18px;color:#A98320}
+.warn .badge{font-size:22px}
+
+/* main */
+main{display:flex;flex-direction:column;gap:22px;min-width:0}
+.bar{display:flex;align-items:center;gap:14px}
+.search{flex:1;display:flex;align-items:center;gap:10px;background:#fff;border-radius:999px;padding:11px 18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.search input{border:0;outline:0;background:none;font:inherit;color:var(--ink);width:100%}
+.search input::placeholder{color:var(--faint)}
+.stat{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;background:#fff;border-radius:999px;padding:8px 16px;box-shadow:var(--shadow)}
+.stat i{font-style:normal}
+
+.hero{position:relative;border-radius:26px;overflow:hidden;padding:34px 36px;min-height:240px;background:linear-gradient(120deg,#CFE6FF 0%,#BEDCFF 45%,#D9CFFF 100%);box-shadow:var(--shadow);display:flex;align-items:center}
+.hero .tx{position:relative;z-index:2;max-width:56%}
+.hero h1{font-size:36px;line-height:1.12;letter-spacing:-.8px}
+.hero p{margin:10px 0 20px;font-size:16px;color:#2E4F8C}
+.hero p b{color:var(--red)}
+.btn{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;padding:13px 26px;box-shadow:0 8px 20px rgba(31,111,235,.4);transition:transform .12s}
+.btn:hover{transform:translateY(-2px)}
+.btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.btn.busy svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn2{border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.55);border-radius:999px;padding:11px 20px;font-weight:700;color:var(--blue-d);margin-left:10px}
+.hero .art{position:absolute;right:20px;bottom:-6px;width:340px;height:230px;z-index:1}
+.pillchip{position:absolute;right:20px;top:18px;z-index:3;background:rgba(255,255,255,.85);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}
+.pillchip .d{width:9px;height:9px;border-radius:50%;background:var(--wa);box-shadow:0 0 0 4px rgba(34,184,102,.2)}
+
+h2.sec{font-size:19px;letter-spacing:-.3px;display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}
+h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
+
+.cont{background:linear-gradient(120deg,#E3EFFF,#EDE6FF);border-radius:22px;padding:18px 20px;display:flex;align-items:center;gap:18px;box-shadow:var(--shadow)}
+.cont .ic{width:84px;height:64px;border-radius:16px;background:#fff;display:grid;place-items:center;font-size:30px;flex:none}
+.cont .mid{flex:1;min-width:0}
+.cont .mid b{display:block;font-size:16px;line-height:1.3}
+.cont .mid span{font-size:12.5px;color:var(--muted)}
+.cont .go{border:0;background:var(--blue);color:#fff;border-radius:999px;font-weight:700;padding:11px 22px;box-shadow:0 6px 14px rgba(31,111,235,.35)}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tile{border:0;text-align:left;border-radius:20px;padding:16px;display:flex;align-items:center;gap:12px;transition:transform .12s;box-shadow:var(--shadow)}
+.tile:hover{transform:translateY(-3px)}
+.tile .ti{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:21px;color:#fff;flex:none}
+.tile b{display:block;font-size:14.5px}
+.tile span{font-size:12px;color:var(--muted)}
+.tile .ar{margin-left:auto;color:var(--muted);font-weight:700}
+
+.card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:10px}
+.task{display:grid;grid-template-columns:26px 1fr auto;gap:14px;align-items:start;padding:14px;border-radius:16px}
+.task:hover{background:var(--sky)}
+.task input{appearance:none;width:22px;height:22px;border:2.5px solid #A9C3EE;border-radius:50%;margin-top:1px;cursor:pointer;display:grid;place-items:center;background:#fff;transition:.12s}
+.task input:checked{background:var(--wa);border-color:var(--wa)}
+.task input:checked::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.task .tt{font-weight:700;line-height:1.35}
+.task .ta{color:var(--muted);font-size:12.5px;margin-top:3px}
+.task.done{opacity:.5}.task.done .tt{text-decoration:line-through}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:3px 11px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill.high{background:var(--red-soft);color:var(--red)}
+.pill.norm{background:var(--file-soft);color:#C9700F}
+.pill.dl{background:var(--sky);color:var(--blue-d)}
+.right{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+
+.day{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 14px 4px}
+.item{display:grid;grid-template-columns:42px 1fr;gap:14px;padding:12px 14px;border-radius:16px}
+.item:hover{background:var(--sky)}
+.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:19px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:12.5px;color:var(--muted)}
+.meta strong{color:var(--ink)}
+.new{background:var(--wa);color:#fff;border-radius:999px;padding:1px 9px;font-size:10.5px;font-weight:800;letter-spacing:.04em}
+.body{margin-top:4px}
+.file{display:inline-flex;gap:6px;margin-top:8px;background:var(--file-soft);color:#B8610A;border-radius:10px;padding:4px 12px;font-size:12px;font-weight:600}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+
+/* right rail */
+.rail{display:flex;flex-direction:column;gap:18px;position:sticky;top:22px;align-self:start}
+.rc{background:#fff;border-radius:22px;box-shadow:var(--shadow);padding:18px}
+.rc h3{font-size:15px;margin-bottom:12px}
+.ringwrap{display:flex;align-items:center;gap:16px}
+.ring{position:relative;width:104px;height:104px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.1}
+.ring .c b,.ring .c span{display:block}.ring .c b{font-size:21px}.ring .c span{font-size:11px;color:var(--muted)}
+.ringtxt b{display:block;font-size:15px}.ringtxt span{font-size:12.5px;color:var(--muted)}
+.week{display:flex;justify-content:space-between;margin-top:16px}
+.week div{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:600}
+.week i{width:22px;height:22px;border-radius:50%;background:var(--sky);display:grid;place-items:center;font-style:normal;font-size:11px;color:#fff}
+.week i.on{background:var(--blue)}
+.week i.today{box-shadow:0 0 0 3px var(--sky-2)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);font-size:13px}
+.row:last-child{border:0}.row span{color:var(--muted);font-size:12px}
+.kw{display:flex;flex-wrap:wrap;gap:6px}
+.kw span{background:var(--sky);color:var(--blue-d);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:600}
+.kw span.hi{background:var(--red-soft);color:var(--red)}
+.link{border:0;background:none;color:var(--blue);font-weight:700;font-size:12.5px}
+.promo{border-radius:22px;padding:18px;background:linear-gradient(135deg,#E6DCFF,#D3E4FF);box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start}
+.promo .gift{font-size:34px}
+.promo b{display:block;font-size:14px}.promo p{font-size:12.5px;color:#4B5E8F;margin:3px 0 10px}
+.bar2{height:9px;background:rgba(255,255,255,.8);border-radius:999px;overflow:hidden}
+.bar2 i{display:block;height:100%;background:var(--blue);border-radius:999px}
+.promo small{font-size:11.5px;color:#4B5E8F}
+
+.modal{position:fixed;inset:0;background:rgba(18,48,107,.35);backdrop-filter:blur(3px);display:none;place-items:center;z-index:20;padding:20px}
+.modal.on{display:grid}
+.mb{background:#fff;border-radius:24px;max-width:440px;width:100%;padding:28px;box-shadow:var(--shadow)}
+.mb h3{font-size:18px;margin-bottom:10px}.mb p{color:var(--muted);line-height:1.6;font-size:13.5px}.mb .btn{margin-top:18px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--blue);color:#fff;border-radius:999px;padding:12px 22px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:30;box-shadow:0 10px 24px rgba(31,111,235,.4)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1180px){.app{grid-template-columns:200px minmax(0,1fr)}.rail{grid-column:1/-1;position:static;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+@media (max-width:820px){.app{grid-template-columns:1fr;padding:14px}.side{position:static;height:auto}.nav{flex-direction:row;overflow:auto}.tiles{grid-template-columns:1fr 1fr}.hero .art{display:none}.hero .tx{max-width:100%}.warn{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="side">
+    <div class="logo">
+      <div class="m"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/></svg></div>
+      <div><b>FacultySync</b><small>Notices, sorted &amp; sunny</small></div>
+    </div>
+    <nav class="nav">
+      <a href="#home" class="on"><i>🏠</i>Home</a>
+      <a href="#actions"><i>✅</i>Actions <span class="cnt" id="navCnt">0</span></a>
+      <a href="#timeline"><i>📬</i>Timeline</a>
+      <a href="#channels"><i>🔌</i>Channels</a>
+      <a href="#chats"><i>💬</i>Chats</a>
+      <a href="#" onclick="openNoticesFolder();return false"><i>📁</i>Notices folder</a>
+    </nav>
+    <div class="grow"></div>
+    <div class="warn" id="waNote">
+      <button class="x" onclick="dismissNote()" aria-label="Dismiss">×</button>
+      <div class="badge">⚠️</div><b>About WhatsApp</b>
+      <p>It is linked as a companion device. This is unofficial and can put your number at risk, so keep it to reading only.</p>
+    </div>
+  </aside>
+
+  <main id="home">
+    <div class="bar">
+      <label class="search"><span>🔍</span><input id="q" placeholder="Search notices, chats, people…" oninput="render()"></label>
+      <div class="stat" title="New since last sync"><i>⚡</i><span id="statNew">0</span></div>
+      <div class="stat" title="High priority"><i>🔥</i><span id="statHigh">0</span></div>
+    </div>
+
+    <section class="hero">
+      <div class="pillchip"><span class="d"></span><span id="heroChip">WhatsApp · live</span></div>
+      <div class="tx">
+        <h1 id="hello">Hello! 👋</h1>
+        <p id="heroSub">Reading your notices…</p>
+        <button class="btn" id="syncBtn" onclick="syncNow()"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/></svg>Sync now</button><button class="btn2" onclick="markAllSeen()">All caught up ✓</button>
+      </div>
+      <svg class="art" viewBox="0 0 340 230" aria-hidden="true">
+        <ellipse cx="70" cy="60" rx="42" ry="16" fill="#fff" opacity=".85"/><ellipse cx="96" cy="50" rx="28" ry="15" fill="#fff" opacity=".85"/>
+        <ellipse cx="290" cy="40" rx="34" ry="13" fill="#fff" opacity=".8"/><ellipse cx="270" cy="34" rx="20" ry="12" fill="#fff" opacity=".8"/>
+        <path d="M0 230V190Q80 150 170 180T340 168V230Z" fill="#7ED6A6"/><path d="M60 230V205Q150 175 250 200T340 195V230Z" fill="#5CC48F"/>
+        <g transform="translate(170 10)">
+          <path d="M-34 40l-10-26 22 12zM34 40l10-26-22 12z" fill="#FF9500"/>
+          <ellipse cx="0" cy="110" rx="62" ry="68" fill="#FFB52E"/>
+          <ellipse cx="0" cy="126" rx="40" ry="46" fill="#FFE6A8"/>
+          <path d="M-60 100q-26 14-16 52q22-10 30-34z" fill="#FF9500"/>
+          <path d="M60 96q30-34 40-62q-30 4-46 40z" fill="#FF9500"/>
+          <circle cx="-22" cy="84" r="21" fill="#fff"/><circle cx="22" cy="84" r="21" fill="#fff"/>
+          <circle cx="-20" cy="86" r="10" fill="#1F6FEB"/><circle cx="24" cy="86" r="10" fill="#1F6FEB"/>
+          <circle cx="-17" cy="82" r="3.5" fill="#fff"/><circle cx="27" cy="82" r="3.5" fill="#fff"/>
+          <path d="M-8 104l8 14 8-14z" fill="#FF6B3D"/>
+          <path d="M0 16L-52 36l52 20 52-20z" fill="#1E3F8F"/><path d="M-30 50v14q30 12 60 0V50q-30 10-60 0z" fill="#2A56B8"/>
+          <path d="M52 36v26" stroke="#FFC53D" stroke-width="3"/><circle cx="52" cy="66" r="5" fill="#FFC53D"/>
+          <g transform="translate(-6 128) rotate(-8)"><rect x="-26" y="-18" width="52" height="38" rx="7" fill="#fff"/><path d="M-26 -14l26 22 26-22" fill="none" stroke="#1F6FEB" stroke-width="3" stroke-linejoin="round"/><circle cx="18" cy="-18" r="9" fill="#FF6B6B"/></g>
+          <ellipse cx="-20" cy="176" rx="14" ry="6" fill="#FF8A3D"/><ellipse cx="20" cy="176" rx="14" ry="6" fill="#FF8A3D"/>
+        </g>
+      </svg>
+    </section>
+
+    <section id="continue" hidden>
+      <h2 class="sec">Continue where you left off</h2>
+      <div class="cont"><div class="ic" id="contIc">📌</div><div class="mid"><b id="contT"></b><span id="contS"></span></div><button class="go" id="contBtn">Mark done</button></div>
+    </section>
+
+    <section id="channels">
+      <h2 class="sec">Your channels</h2>
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section id="actions">
+      <h2 class="sec">Needs your action <small id="taskCount"></small></h2>
+      <div class="card" id="tasks"></div>
+    </section>
+
+    <section id="timeline">
+      <h2 class="sec">Timeline <small id="streamCount"></small></h2>
+      <div class="card" id="stream"></div>
+    </section>
+  </main>
+
+  <aside class="rail" id="chats">
+    <div class="rc">
+      <h3>Today's progress</h3>
+      <div class="ringwrap">
+        <div class="ring">
+          <svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="44" fill="none" stroke="#E1EDFF" stroke-width="10"/><circle id="ringArc" cx="52" cy="52" r="44" fill="none" stroke="#1F6FEB" stroke-width="10" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5" style="transition:stroke-dashoffset .6s"/></svg>
+          <div class="c"><div><b id="ringN">0/0</b><span>done</span></div></div>
+        </div>
+        <div class="ringtxt"><b id="ringT">No actions yet</b><span id="ringS">Tick items off as you finish them.</span></div>
+      </div>
+      <div class="week" id="week"></div>
+    </div>
+
+    <div class="rc">
+      <h3>Monitored chats <button class="link" style="float:right" onclick="openModal()">How to edit</button></h3>
+      <div id="chatList"></div>
+    </div>
+
+    <div class="rc">
+      <h3>Watch words</h3>
+      <div class="kw" id="kw"></div>
+    </div>
+
+    <div class="promo">
+      <div class="gift">🎁</div>
+      <div style="flex:1"><b>Connect Gmail &amp; Outlook</b><p>One tap sync for every account, coming next.</p><div class="bar2"><i style="width:33%"></i></div><small>1 of 3 channels connected</small></div>
+    </div>
+  </aside>
+</div>
+
+<div class="modal" id="modal" onclick="closeModal()"><div class="mb" onclick="event.stopPropagation()">
+  <h3>Choose which chats to watch</h3>
+  <p>Chats are listed in <code>whatsapp-bridge/config.json</code> under <code>monitoredChats</code>, using the exact group names. The bridge reloads the file live, so there is no restart.<br><br>To see your exact names, run <code>npm run list-chats</code> in the whatsapp-bridge folder.</p>
+  <button class="btn" onclick="closeModal()">Got it</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var DATA=null;
+  function $(i){return document.getElementById(i)}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+  function api(p,o){return fetch(p,o).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})}
+  function post(b){return api("/api/state",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})}
+  function isNew(n){var s=DATA.state.lastSeen;return !s||new Date(n.timestamp)>new Date(s)}
+  function timeOf(ts){var d=new Date(ts);return isNaN(d)?"":d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:false})}
+  function startOf(d){var x=new Date(d);x.setHours(0,0,0,0);return x}
+  function dayKey(ts){var d=new Date(ts);if(isNaN(d))return"Earlier";var diff=Math.round((startOf(new Date())-startOf(d))/864e5);return diff===0?"Today":diff===1?"Yesterday":d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"})}
+  function hasDeadline(n){return n.deadline&&!/^Not specified/i.test(n.deadline)}
+  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove("on")},2600)}
+  function match(n,q){return !q||[n.chatName,n.sender,n.rawText,n.summary,n.category].join(" ").toLowerCase().indexOf(q)>=0}
+
+  window.render=function(){
+    if(!DATA)return;
+    var q=($("q").value||"").trim().toLowerCase();
+    var all=DATA.notices.slice().sort(function(a,b){return new Date(b.timestamp)-new Date(a.timestamp)});
+    var list=all.filter(function(n){return match(n,q)});
+    var fresh=all.filter(isNew), high=fresh.filter(function(n){return n.priority==="HIGH"}).length;
+    var h=new Date().getHours(), g=h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+    $("hello").textContent=g+(DATA.owner?", "+DATA.owner:"")+"! 👋";
+    $("heroSub").innerHTML=fresh.length?"<b>"+fresh.length+" new</b> notice"+(fresh.length===1?"":"s")+" since your last sync"+(high?", <b>"+high+" high priority</b>":"")+".":"You are all caught up. Lovely! 🎉";
+    $("statNew").textContent=fresh.length;$("statHigh").textContent=high;
+    var real=(DATA.chats||[]).filter(function(c){return !/^REPLACE_WITH/i.test(c)});
+    $("heroChip").textContent="WhatsApp · "+real.length+" chat"+(real.length===1?"":"s");
+
+    var tasksAll=all.filter(function(n){return n.priority==="HIGH"||hasDeadline(n)}).sort(function(a,b){
+      var da=DATA.state.done[a.id]?1:0,db=DATA.state.done[b.id]?1:0;if(da!==db)return da-db;return (b.priority==="HIGH")-(a.priority==="HIGH")});
+    var tasks=tasksAll.filter(function(n){return match(n,q)});
+    var open=tasksAll.filter(function(n){return !DATA.state.done[n.id]});
+    $("navCnt").textContent=open.length;$("taskCount").textContent=open.length+" open";
+
+    var top=open[0], c=$("continue");
+    if(top){c.hidden=false;$("contIc").textContent=top.priority==="HIGH"?"🔥":"📌";$("contT").textContent=top.summary;$("contS").textContent=top.chatName+" · "+(hasDeadline(top)?top.deadline:top.actionRequired);
+      $("contBtn").onclick=function(){var o={};o[top.id]=true;post({done:o}).then(load).then(function(){toast("Nice one! ✅")})}}else c.hidden=true;
+
+    var files=all.filter(function(n){return n.savedFile}).length;
+    $("tiles").innerHTML=
+      tile("wa","💬","WhatsApp",fresh.length+" new","#22B866","var(--wa-soft)","#timeline")+
+      tile("gm","✉️","Gmail","Connect","#FF6B6B","var(--gm-soft)","",1)+
+      tile("ol","📅","Outlook","Connect","#1F6FEB","var(--ol-soft)","",1)+
+      tile("fl","📄","Documents",files+" saved","#FF9A3D","var(--file-soft)","");
+    Array.prototype.forEach.call(document.querySelectorAll(".tile[data-soon]"),function(b){b.onclick=function(){toast(b.getAttribute("data-soon")+" connection is coming in the next release")}});
+    Array.prototype.forEach.call(document.querySelectorAll(".tile[data-open]"),function(b){b.onclick=openNoticesFolder});
+
+    $("tasks").innerHTML=tasks.length?tasks.map(function(n){
+      var d=!!DATA.state.done[n.id],hi=n.priority==="HIGH";
+      return '<div class="task'+(d?' done':'')+'"><input type="checkbox" data-id="'+esc(n.id)+'"'+(d?' checked':'')+' aria-label="Done"><div><div class="tt">'+esc(n.summary)+'</div><div class="ta">'+esc(n.actionRequired)+' · '+esc(n.chatName)+'</div></div><div class="right"><span class="pill '+(hi?'high':'norm')+'">'+(hi?'🔥 High':'Normal')+'</span>'+(hasDeadline(n)?'<span class="pill dl">⏰ '+esc(n.deadline)+'</span>':'')+'</div></div>';
+    }).join(""):'<div class="empty"><b>'+(q?'No matches':'Nothing to do')+'</b>'+(q?'Try a different word.':'Important notices will appear here with what to do and by when.')+'</div>';
+
+    $("streamCount").textContent=list.length+(q?" found":" in total");
+    var out="",last="";
+    list.forEach(function(n){var k=dayKey(n.timestamp);if(k!==last){out+='<div class="day">'+esc(k)+'</div>';last=k}
+      out+='<div class="item"><div class="av" style="background:var(--wa)">💬</div><div><div class="meta"><strong>'+esc(n.chatName)+'</strong><span>'+esc(n.sender)+'</span><span>'+esc(timeOf(n.timestamp))+'</span>'+(isNew(n)?'<span class="new">NEW</span>':'')+(n.priority==="HIGH"?'<span class="pill high">🔥 High</span>':'')+'</div><div class="body">'+esc(n.rawText||n.summary)+'</div>'+(n.savedFile?'<div class="file">📄 '+esc(String(n.savedFile).split("/").pop())+'</div>':'')+'</div></div>';});
+    $("stream").innerHTML=out||'<div class="empty"><b>'+(q?'No matches':'Nothing here yet')+'</b>'+(q?'Try a different word.':'Start the bridge and add your real chat names in config.json.')+'</div>';
+
+    /* progress ring */
+    var tot=tasksAll.length,dn=tot-open.length,C=276.5;
+    $("ringN").textContent=dn+"/"+tot;$("ringArc").setAttribute("stroke-dashoffset",String(C*(1-(tot?dn/tot:0))));
+    $("ringT").textContent=!tot?"No actions yet":dn===tot?"All done! 🎉":open.length+" to go";
+    $("ringS").textContent=!tot?"Tick items off as you finish them.":dn===tot?"Enjoy your day.":"You are "+Math.round(100*dn/tot)+"% through today's list.";
+    var days=[],today=startOf(new Date()),L=["S","M","T","W","T","F","S"];
+    for(var i=6;i>=0;i--){var d=new Date(today);d.setDate(d.getDate()-i);days.push(d)}
+    $("week").innerHTML=days.map(function(d,i){var has=all.some(function(n){return startOf(n.timestamp).getTime()===d.getTime()});
+      return '<div><i class="'+(has?'on':'')+(i===6?' today':'')+'">'+(has?'✓':'')+'</i>'+L[d.getDay()]+'</div>'}).join("");
+
+    $("chatList").innerHTML=(DATA.chats||[]).map(function(c){var ph=/^REPLACE_WITH/i.test(c);return '<div class="row"><b>'+(ph?'Not set':esc(c))+'</b><span>'+(ph?'edit config.json':'✓ watching')+'</span></div>'}).join("")||'<div class="row"><span>No chats configured</span></div>';
+    $("kw").innerHTML='<span class="hi">ASD</span><span class="hi">Ashish</span>'+(DATA.keywords||[]).filter(function(k){return !/^(asd|ashish)$/i.test(k)}).map(function(k){return '<span>'+esc(k)+'</span>'}).join("");
+  };
+  function tile(id,ic,name,sub,col,bg,href,soon){
+    return '<button class="tile" style="background:'+bg+'"'+(soon?' data-soon="'+name+'"':(id==="fl"?' data-open="1"':''))+'><div class="ti" style="background:'+col+'">'+ic+'</div><div><b>'+name+'</b><span>'+sub+'</span></div><span class="ar">›</span></button>';
+  }
+
+  function load(){return api("/api/notices").then(function(d){DATA=d;render()}).catch(function(e){$("hello").textContent="Can't reach the dashboard";$("heroSub").textContent="Start it with open-whatsapp-dashboard.command ("+e.message+")."})}
+  window.syncNow=function(){var b=$("syncBtn");if(b.classList.contains("busy"))return;b.classList.add("busy");var before=DATA?DATA.notices.length:0;
+    Promise.all([load(),new Promise(function(r){setTimeout(r,700)})]).then(function(){b.classList.remove("busy");var a=DATA?DATA.notices.length-before:0;toast(a>0?"Synced · "+a+" new notice"+(a===1?"":"s")+" 🎉":"Synced · nothing new")})};
+  window.markAllSeen=function(){post({markSeen:true}).then(load).then(function(){toast("All caught up 🎉")})};
+  document.addEventListener("change",function(e){var id=e.target&&e.target.getAttribute&&e.target.getAttribute("data-id");if(!id)return;var o={};o[id]=e.target.checked;post(  {done:o}).then(load)});
+  window.openNoticesFolder=function(){api("/api/open-folder",{method:"POST"}).catch(function(){toast("Notices folder not found. Check config.json")})};
+  window.openModal=function(){$("modal").classList.add("on")};
+  window.closeModal=function(){$("modal").classList.remove("on")};
+  window.dismissNote=function(){$("waNote").style.display="none";ls("facultysync_note","1")};
+  if(ls("facultysync_note")==="1")$("waNote").style.display="none";
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
+  Array.prototype.forEach.call(document.querySelectorAll(".nav a[href^='#']"),function(a){a.addEventListener("click",function(){if(a.getAttribute("href").length>1){Array.prototype.forEach.call(document.querySelectorAll(".nav a"),function(x){x.classList.remove("on")});a.classList.add("on")}})});
+  load();setInterval(load,15000);
+})();
+</script>
+</body>
+</html>
