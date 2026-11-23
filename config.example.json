@@ -1,0 +1,71 @@
+{
+  "faculty": {
+    "name": "Prof. Ashish Dhillon",
+    "acronym": "ASD",
+    "department": "Department of Computer Applications",
+    "institution": "DPGITM"
+  },
+  "server": {
+    "port": 3300,
+    "autoOpenBrowser": true
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "monitoredChats": [
+        "Mentors BCA",
+        "DPGITM Faculty",
+        "Exam Cell"
+      ],
+      "downloadMedia": true,
+      "downloadsDir": "./data/downloads"
+    },
+    "outlook": {
+      "enabled": true,
+      "email": "ashishdhillon@dpgitm.ac.in",
+      "pollIntervalMinutes": 15
+    },
+    "gmail": {
+      "enabled": true,
+      "email": "dhillon.ashish15@gmail.com",
+      "pollIntervalMinutes": 15
+    }
+  },
+  "ai": {
+    "enabled": true,
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "autoExtractDeadlines": true,
+    "autoSynthesizeTasks": true
+  },
+  "triage": {
+    "keywords": [
+      "lab",
+      "incharge",
+      "load",
+      "workload",
+      "syllabus",
+      "exam",
+      "sessional",
+      "datesheet",
+      "meeting",
+      "attendance",
+      "defaulter",
+      "marks",
+      "result",
+      "circular",
+      "urgent"
+    ],
+    "ignorePhrases": [
+      "good morning",
+      "gm",
+      "good night",
+      "thank you",
+      "thanks",
+      "ok",
+      "okay",
+      "done sir",
+      "noted sir"
+    ]
+  }
+}
