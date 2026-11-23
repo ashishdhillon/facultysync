@@ -3,158 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FacultySync &bull; Universal Academic Multi-Channel Desk</title>
+  <title>FacultySync &bull; Academic Desk</title>
   <style>
-    /* CSS Variables: WhatsApp Green & Crisp White with Moderately Thick Borders */
     :root {
       --wa-header-bg: #008069;
       --wa-header-text: #ffffff;
-      --wa-header-sub: rgba(255, 255, 255, 0.9);
+      --wa-header-sub: rgba(255, 255, 255, 0.85);
       --wa-bg: #f0f2f5;
       --wa-panel: #ffffff;
-      --wa-panel-hover: #f7f9fa;
-      --wa-border: #b0bec5;             /* Moderately thick, distinct border */
-      --wa-border-strong: #78909c;      /* Emphasized border */
+      --wa-panel-hover: #f8fafc;
+      --wa-border: #d1d7db;             /* Crisp 1px thin border (50% thinner) */
+      --wa-border-subtle: #e9edef;
       --wa-green: #008069;
       --wa-green-hover: #006654;
       --wa-green-bubble: #e7fce3;
-      --wa-bubble-border: #a3e996;
       --wa-text-primary: #111b21;
-      --wa-text-secondary: #455a64;
-      --wa-text-muted: #78909c;
+      --wa-text-secondary: #54656f;
+      --wa-text-muted: #8696a0;
       --wa-danger: #c62828;
       --wa-danger-bg: #ffebee;
       --wa-warning: #b26a00;
       --wa-warning-bg: #fff8e1;
       --wa-blue: #027eb5;
-      --wa-blue-bg: #e1f5fe;
       --wa-purple: #6a1b9a;
       --wa-purple-bg: #f3e5f5;
-      --wa-code-bg: #edf2f7;
-      --wa-code-border: #90a4ae;
-      --wa-code-text: #0550ae;
-      --wa-card-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      --wa-tag-bg: #e2e8f0;
+      --wa-tag-bg: #f0f2f5;
       --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* WhatsApp Dark Mode Theme */
     body.dark-mode {
       --wa-header-bg: #202c33;
       --wa-header-text: #e9edef;
       --wa-header-sub: #8696a0;
       --wa-bg: #0c1317;
-      --wa-panel: #1a252c;
-      --wa-panel-hover: #222e35;
-      --wa-border: #3b4a54;             /* Moderately thick, distinct dark border */
-      --wa-border-strong: #54656f;
+      --wa-panel: #182229;
+      --wa-panel-hover: #202c33;
+      --wa-border: #2a3942;             /* Crisp 1px thin dark border */
+      --wa-border-subtle: #222d34;
       --wa-green: #00a884;
       --wa-green-hover: #02906f;
       --wa-green-bubble: #005c4b;
-      --wa-bubble-border: #047a64;
       --wa-text-primary: #e9edef;
       --wa-text-secondary: #aebac1;
       --wa-text-muted: #8696a0;
       --wa-danger: #ff8594;
-      --wa-danger-bg: rgba(241, 92, 109, 0.18);
+      --wa-danger-bg: rgba(241, 92, 109, 0.15);
       --wa-warning: #ffd279;
-      --wa-warning-bg: rgba(255, 210, 121, 0.18);
+      --wa-warning-bg: rgba(255, 210, 121, 0.15);
       --wa-blue: #53bdeb;
-      --wa-blue-bg: rgba(83, 189, 235, 0.15);
       --wa-purple: #c084fc;
       --wa-purple-bg: rgba(192, 132, 252, 0.15);
-      --wa-code-bg: #111b21;
-      --wa-code-border: #2a3942;
-      --wa-code-text: #25d366;
-      --wa-card-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-      --wa-tag-bg: #222e35;
+      --wa-tag-bg: #202c33;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
     body {
       background-color: var(--wa-bg);
       color: var(--wa-text-primary);
       font-family: var(--font-stack);
-      line-height: 1.45;
+      line-height: 1.35;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      font-size: 13px;
     }
 
-    /* Top App Bar */
+    /* Ultra-Slim Header */
     .wa-header {
       background-color: var(--wa-header-bg);
       color: var(--wa-header-text);
-      padding: 12px 24px;
+      padding: 8px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 2px solid var(--wa-border-strong);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border-bottom: 1px solid var(--wa-border);
     }
 
     .wa-brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .wa-logo {
-      width: 42px;
-      height: 42px;
+      width: 30px;
+      height: 30px;
       background-color: #25d366;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 22px;
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      font-size: 16px;
     }
 
     .wa-title-wrap h1 {
-      font-size: 17px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--wa-header-text);
-      letter-spacing: -0.3px;
+      line-height: 1.2;
     }
 
     .wa-title-wrap p {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--wa-header-sub);
     }
 
     .wa-header-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
-    /* Theme Switcher Toggle */
     .theme-toggle-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.18);
-      border: 2px solid rgba(255, 255, 255, 0.35);
-      padding: 4px 10px;
-      border-radius: 20px;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 14px;
       cursor: pointer;
       user-select: none;
     }
 
     .theme-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--wa-header-text);
     }
@@ -162,8 +145,8 @@
     .switch {
       position: relative;
       display: inline-block;
-      width: 36px;
-      height: 20px;
+      width: 28px;
+      height: 16px;
     }
 
     .switch input {
@@ -177,19 +160,19 @@
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(255, 255, 255, 0.4);
-      transition: .25s;
-      border-radius: 20px;
+      transition: .2s;
+      border-radius: 16px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 14px;
-      width: 14px;
-      left: 3px;
-      bottom: 3px;
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
       background-color: white;
-      transition: .25s;
+      transition: .2s;
       border-radius: 50%;
     }
 
@@ -198,121 +181,115 @@
     }
 
     input:checked + .slider:before {
-      transform: translateX(16px);
+      transform: translateX(12px);
     }
 
     .live-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.35);
       color: var(--wa-header-text);
-      padding: 4px 12px;
-      border-radius: 14px;
-      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.5px;
     }
 
     body.dark-mode .live-badge {
       background: rgba(0, 168, 132, 0.15);
-      border-color: rgba(0, 168, 132, 0.6);
+      border-color: rgba(0, 168, 132, 0.5);
       color: #00a884;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background-color: #25d366;
       border-radius: 50%;
-      box-shadow: 0 0 6px #25d366;
     }
 
     .date-indicator {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--wa-header-sub);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-weight: 500;
     }
 
-    /* Main App Body */
+    /* Main Container */
     .app-body {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 290px 1fr;
       flex: 1;
-      max-width: 1480px;
+      max-width: 1320px;
       width: 100%;
       margin: 0 auto;
       background-color: var(--wa-bg);
-      border-left: 2px solid var(--wa-border);
-      border-right: 2px solid var(--wa-border);
+      border-left: 1px solid var(--wa-border);
+      border-right: 1px solid var(--wa-border);
     }
 
-    /* Sidebar */
+    /* Compact Sidebar */
     .sidebar {
       background-color: var(--wa-panel);
-      border-right: 2px solid var(--wa-border);
+      border-right: 1px solid var(--wa-border);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      gap: 16px;
-      padding: 16px;
+      gap: 10px;
+      padding: 10px;
     }
 
     .sidebar-card {
       background: var(--wa-panel);
-      border: 2px solid var(--wa-border);
-      border-radius: 10px;
-      padding: 16px;
-      box-shadow: var(--wa-card-shadow);
+      border: 1px solid var(--wa-border);
+      border-radius: 6px;
+      padding: 10px;
     }
 
     .sidebar-section-title {
-      font-size: 11px;
-      font-weight: 800;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
       color: var(--wa-text-muted);
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* Channel Integrations Mini Cards */
     .channel-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border: 2px solid var(--wa-border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
+      border: 1px solid var(--wa-border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      margin-bottom: 6px;
       background: var(--wa-bg);
       cursor: pointer;
     }
 
     .channel-item:hover {
-      border-color: var(--wa-border-strong);
       background: var(--wa-panel-hover);
+      border-color: var(--wa-green);
     }
 
     .channel-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .channel-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
-      border: 2px solid var(--wa-border);
+      font-size: 13px;
     }
 
     .icon-wa { background: #25d366; color: white; }
@@ -321,62 +298,44 @@
     .icon-ai { background: #7c3aed; color: white; }
 
     .channel-badge {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 6px;
-      border: 1px solid currentColor;
+      padding: 1px 5px;
+      border-radius: 4px;
     }
 
     .badge-connected {
       color: var(--wa-green);
       background: var(--wa-green-bubble);
-      border-color: var(--wa-bubble-border);
-    }
-
-    .badge-optional {
-      color: var(--wa-text-muted);
-      background: var(--wa-tag-bg);
-      border-color: var(--wa-border);
+      border: 1px solid var(--wa-green);
     }
 
     /* Chat Selection List */
-    .chat-select-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
     .chat-pill-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border: 2px solid var(--wa-border);
-      border-radius: 8px;
-      padding: 10px 12px;
+      border: 1px solid var(--wa-border);
+      border-radius: 6px;
+      padding: 6px 8px;
       background: var(--wa-panel);
+      margin-bottom: 5px;
     }
 
     .chat-pill-item.active {
       border-color: var(--wa-green);
       background: var(--wa-green-bubble);
-      border-left: 5px solid var(--wa-green);
-    }
-
-    .chat-pill-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      border-left: 3px solid var(--wa-green);
     }
 
     .chat-pill-meta strong {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--wa-text-primary);
       display: block;
     }
 
     .chat-pill-meta span {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--wa-text-secondary);
     }
 
@@ -384,17 +343,16 @@
     .kw-tag-cloud {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
     }
 
     .kw-tag {
       background: var(--wa-tag-bg);
-      border: 2px solid var(--wa-border);
+      border: 1px solid var(--wa-border);
       color: var(--wa-text-secondary);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 6px;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
 
     .kw-tag.kw-high {
@@ -410,74 +368,71 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      padding: 24px;
-      gap: 20px;
+      padding: 12px 14px;
+      gap: 10px;
     }
 
-    /* Sync Catch-Up Hero Bar */
+    /* Compact Catch-Up Bar */
     .sync-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 10px;
       background: var(--wa-panel);
-      padding: 16px 20px;
-      border-radius: 10px;
-      border: 2px solid var(--wa-border);
-      box-shadow: var(--wa-card-shadow);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--wa-border);
     }
 
     .sync-info {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 8px;
     }
 
     .sync-icon-circle {
-      width: 44px;
-      height: 44px;
+      width: 28px;
+      height: 28px;
       background: var(--wa-green-bubble);
-      border: 2px solid var(--wa-bubble-border);
+      border: 1px solid var(--wa-green);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 14px;
     }
 
     .sync-meta h3 {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--wa-text-primary);
     }
 
     .sync-meta p {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--wa-text-secondary);
     }
 
     .sync-actions {
       display: flex;
-      gap: 10px;
+      gap: 6px;
       align-items: center;
-      flex-wrap: wrap;
     }
 
     /* Buttons */
     .btn-sync-catchup {
       background-color: var(--wa-green);
       color: #ffffff;
-      border: 2px solid var(--wa-green-hover);
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
+      border: 1px solid var(--wa-green-hover);
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 2px 6px rgba(0, 128, 105, 0.25);
+      gap: 5px;
     }
 
     .btn-sync-catchup:hover {
@@ -487,169 +442,127 @@
     .wa-btn-secondary {
       background-color: var(--wa-panel);
       color: var(--wa-text-primary);
-      border: 2px solid var(--wa-border);
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-size: 12px;
+      border: 1px solid var(--wa-border);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .wa-btn-secondary:hover {
       background-color: var(--wa-panel-hover);
-      border-color: var(--wa-border-strong);
+      border-color: var(--wa-green);
     }
 
-    /* Cards */
+    /* Compact Cards */
     .wa-card {
       background: var(--wa-panel);
-      border: 2px solid var(--wa-border);
-      border-radius: 10px;
-      box-shadow: var(--wa-card-shadow);
+      border: 1px solid var(--wa-border);
+      border-radius: 6px;
       overflow: hidden;
     }
 
     .wa-card-header {
-      padding: 14px 18px;
+      padding: 8px 12px;
       background: var(--wa-panel);
-      border-bottom: 2px solid var(--wa-border);
+      border-bottom: 1px solid var(--wa-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .wa-card-header h2 {
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
       color: var(--wa-text-secondary);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .wa-card-body {
-      padding: 18px;
+      padding: 10px 12px;
     }
 
-    /* Antigravity AI Banner */
-    .ai-banner-strip {
-      background: var(--wa-purple-bg);
-      border: 2px solid var(--wa-purple);
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .ai-banner-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: var(--wa-text-primary);
-    }
-
-    .ai-badge {
-      background: var(--wa-purple);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-    }
-
-    /* Stream List */
+    /* Compact Stream Cards */
     .stream-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
     }
 
     .stream-item {
       background: var(--wa-bg);
-      border: 2px solid var(--wa-border);
-      border-radius: 8px;
-      padding: 14px;
+      border: 1px solid var(--wa-border);
+      border-radius: 6px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      transition: border-color 0.15s;
+      gap: 5px;
     }
 
     .stream-item:hover {
-      border-color: var(--wa-border-strong);
+      border-color: var(--wa-green);
     }
 
     .stream-item-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
+      font-size: 11px;
     }
 
     .stream-source-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
+      gap: 4px;
+      font-size: 10px;
       font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
+      padding: 1px 6px;
+      border-radius: 4px;
       border: 1px solid var(--wa-border);
       background: var(--wa-panel);
     }
 
-    .stream-badges {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
     .stream-content {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--wa-text-primary);
-      line-height: 1.5;
+      line-height: 1.35;
     }
 
     .stream-meta-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--wa-border);
-      font-size: 12px;
+      padding-top: 4px;
+      border-top: 1px solid var(--wa-border-subtle);
+      font-size: 11px;
     }
 
     .deadline-chip {
       color: var(--wa-warning);
       font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+      font-size: 11px;
     }
 
     .btn-convert-task {
       background-color: var(--wa-panel);
       color: var(--wa-green);
-      border: 2px solid var(--wa-green);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11px;
+      border: 1px solid var(--wa-green);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .btn-convert-task:hover {
@@ -664,28 +577,28 @@
       cursor: default;
     }
 
-    /* Checklist Table */
+    /* Compact Table */
     .checklist-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .checklist-table th {
       text-align: left;
-      padding: 10px 12px;
+      padding: 6px 10px;
       background: var(--wa-bg);
       color: var(--wa-text-secondary);
-      font-weight: 800;
-      font-size: 11px;
+      font-weight: 700;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      border-bottom: 2px solid var(--wa-border);
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--wa-border);
     }
 
     .checklist-table td {
-      padding: 12px;
-      border-bottom: 2px solid var(--wa-border);
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--wa-border-subtle);
       vertical-align: middle;
       color: var(--wa-text-primary);
     }
@@ -696,17 +609,17 @@
 
     .task-checkbox {
       accent-color: var(--wa-green);
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       cursor: pointer;
     }
 
     .priority-tag {
       display: inline-block;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
       border: 1px solid currentColor;
     }
 
@@ -723,56 +636,48 @@
     .file-pill {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       background: var(--wa-bg);
-      border: 2px solid var(--wa-border);
-      padding: 3px 8px;
-      border-radius: 6px;
+      border: 1px solid var(--wa-border);
+      padding: 1px 6px;
+      border-radius: 4px;
       color: var(--wa-blue);
       text-decoration: none;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 600;
     }
 
-    .file-pill:hover {
-      border-color: var(--wa-blue);
-      text-decoration: underline;
-    }
-
-    /* Modal for Chat Selector */
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
       z-index: 1000;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(4px);
     }
 
     .modal-box {
       background: var(--wa-panel);
-      border: 3px solid var(--wa-border-strong);
-      border-radius: 12px;
+      border: 1px solid var(--wa-border);
+      border-radius: 8px;
       width: 90%;
-      max-width: 580px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      max-width: 460px;
       overflow: hidden;
     }
 
     .modal-header {
-      padding: 16px 20px;
+      padding: 10px 14px;
       background: var(--wa-header-bg);
       color: #fff;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid var(--wa-border-strong);
     }
 
     .modal-header h3 {
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 700;
     }
 
@@ -780,31 +685,31 @@
       background: transparent;
       border: none;
       color: #fff;
-      font-size: 20px;
+      font-size: 16px;
       cursor: pointer;
     }
 
     .modal-body {
-      padding: 20px;
-      max-height: 420px;
+      padding: 14px;
+      max-height: 320px;
       overflow-y: auto;
     }
 
     .modal-footer {
-      padding: 14px 20px;
+      padding: 8px 14px;
       background: var(--wa-bg);
-      border-top: 2px solid var(--wa-border);
+      border-top: 1px solid var(--wa-border);
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 6px;
     }
 
     /* Footer */
     .wa-footer {
-      padding: 16px 24px;
+      padding: 10px 18px;
       background: var(--wa-panel);
-      border-top: 2px solid var(--wa-border);
-      font-size: 12px;
+      border-top: 1px solid var(--wa-border);
+      font-size: 11px;
       color: var(--wa-text-secondary);
       display: flex;
       justify-content: space-between;
@@ -814,7 +719,6 @@
     .wa-link {
       color: var(--wa-blue);
       text-decoration: none;
-      font-weight: 600;
     }
 
     .wa-link:hover {
@@ -824,17 +728,16 @@
 </head>
 <body>
 
-  <!-- Top App Bar -->
+  <!-- Slim Header -->
   <header class="wa-header">
     <div class="wa-brand">
       <div class="wa-logo">💬</div>
       <div class="wa-title-wrap">
-        <h1>FacultySync &bull; Multi-Channel Academic Desk</h1>
-        <p>WhatsApp &bull; Outlook &bull; Gmail &bull; Antigravity AI Engine &bull; Ashish Dhillon (ASD)</p>
+        <h1>FacultySync &bull; Academic Desk</h1>
+        <p>WhatsApp &bull; Outlook &bull; Gmail &bull; Antigravity AI &bull; Ashish Dhillon (ASD)</p>
       </div>
     </div>
     <div class="wa-header-right">
-      <!-- Dark/Light Mode Toggle -->
       <div class="theme-toggle-wrap" onclick="toggleTheme()" title="Toggle Day / Night Mode">
         <span class="theme-label" id="theme-label">☀️ Day Mode</span>
         <label class="switch">
@@ -845,123 +748,105 @@
 
       <div class="live-badge">
         <div class="dot"></div>
-        <span>DESK ONLINE</span>
+        <span>DESK LIVE</span>
       </div>
-      <div class="date-indicator" id="live-datetime">23 Nov 2026 &bull; 14:22</div>
+      <div class="date-indicator" id="live-datetime">23 Nov 2026 &bull; 16:10</div>
     </div>
   </header>
 
   <!-- Main Container -->
   <div class="app-body">
 
-    <!-- Left Sidebar -->
+    <!-- Compact Sidebar -->
     <aside class="sidebar">
 
-      <!-- Section: Integrated Channels -->
       <div class="sidebar-card">
         <div class="sidebar-section-title">
           <span>Connected Channels</span>
-          <span style="font-size: 10px; color: var(--wa-green);">4 Active</span>
+          <span style="font-size: 9px; color: var(--wa-green); font-weight: 700;">4 Active</span>
         </div>
 
-        <!-- WhatsApp -->
         <div class="channel-item" onclick="openChatSelectorModal()">
           <div class="channel-left">
             <div class="channel-icon icon-wa">💬</div>
             <div>
-              <strong style="font-size: 13px;">WhatsApp</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">1 Chat Linked &bull; Scan QR</div>
+              <strong style="font-size: 12px;">WhatsApp</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">1 Chat Linked</div>
             </div>
           </div>
           <span class="channel-badge badge-connected">CONFIG</span>
         </div>
 
-        <!-- Outlook -->
         <div class="channel-item" onclick="promptEmailConfig('Outlook')">
           <div class="channel-left">
             <div class="channel-icon icon-outlook">✉️</div>
             <div>
-              <strong style="font-size: 13px;">Microsoft Outlook</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">ashishdhillon@dpgitm.ac.in</div>
+              <strong style="font-size: 12px;">Microsoft Outlook</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">ashishdhillon@dpgitm.ac.in</div>
             </div>
           </div>
           <span class="channel-badge badge-connected">SYNCED</span>
         </div>
 
-        <!-- Gmail -->
         <div class="channel-item" onclick="promptEmailConfig('Gmail')">
           <div class="channel-left">
             <div class="channel-icon icon-gmail">📧</div>
             <div>
-              <strong style="font-size: 13px;">Google Gmail</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">dhillon.ashish15@gmail.com</div>
+              <strong style="font-size: 12px;">Google Gmail</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">dhillon.ashish15@gmail.com</div>
             </div>
           </div>
           <span class="channel-badge badge-connected">SYNCED</span>
         </div>
 
-        <!-- Antigravity AI Engine -->
-        <div class="channel-item" onclick="alert('Antigravity AI is actively assisting with document analysis, deadline extraction, and task prioritization.')">
+        <div class="channel-item" onclick="alert('Antigravity AI is continuously analyzing documents.')">
           <div class="channel-left">
             <div class="channel-icon icon-ai">🧠</div>
             <div>
-              <strong style="font-size: 13px;">Antigravity AI</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">Gemini 3.8 &bull; Auto-Triage</div>
+              <strong style="font-size: 12px;">Antigravity AI</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">Gemini 3.8 Triage</div>
             </div>
           </div>
           <span class="channel-badge badge-connected" style="color: var(--wa-purple); border-color: var(--wa-purple);">ACTIVE</span>
         </div>
       </div>
 
-      <!-- Section: Active WhatsApp Chats Monitored -->
       <div class="sidebar-card">
         <div class="sidebar-section-title">
-          <span>Active WhatsApp Chats</span>
-          <button class="wa-btn-secondary" style="padding: 2px 8px; font-size: 10px;" onclick="openChatSelectorModal()">+ Select</button>
+          <span>Monitored WhatsApp Chats</span>
+          <button class="wa-btn-secondary" style="padding: 1px 6px; font-size: 9px;" onclick="openChatSelectorModal()">+ Select</button>
         </div>
 
-        <div class="chat-select-list">
-          <div class="chat-pill-item active">
-            <div class="chat-pill-left">
-              <span style="font-size: 18px;">📚</span>
-              <div class="chat-pill-meta">
-                <strong>Mentors BCA</strong>
-                <span>Active notice & duty filter</span>
-              </div>
-            </div>
-            <span style="color: var(--wa-green); font-weight: 800; font-size: 12px;">✓</span>
+        <div class="chat-pill-item active">
+          <div class="chat-pill-meta">
+            <strong>Mentors BCA</strong>
+            <span>Active notice filter</span>
           </div>
+          <span style="color: var(--wa-green); font-weight: 800; font-size: 11px;">✓</span>
+        </div>
 
-          <div class="chat-pill-item" onclick="openChatSelectorModal()">
-            <div class="chat-pill-left">
-              <span style="font-size: 18px;">🏛️</span>
-              <div class="chat-pill-meta">
-                <strong>DPGITM Faculty</strong>
-                <span>Click to link</span>
-              </div>
-            </div>
-            <span style="font-size: 11px; color: var(--wa-text-muted);">ADD</span>
+        <div class="chat-pill-item" onclick="openChatSelectorModal()">
+          <div class="chat-pill-meta">
+            <strong>DPGITM Faculty</strong>
+            <span>Click to link</span>
           </div>
+          <span style="font-size: 9px; color: var(--wa-text-muted);">ADD</span>
+        </div>
 
-          <div class="chat-pill-item" onclick="openChatSelectorModal()">
-            <div class="chat-pill-left">
-              <span style="font-size: 18px;">📝</span>
-              <div class="chat-pill-meta">
-                <strong>Exam Cell Notices</strong>
-                <span>Click to link</span>
-              </div>
-            </div>
-            <span style="font-size: 11px; color: var(--wa-text-muted);">ADD</span>
+        <div class="chat-pill-item" onclick="openChatSelectorModal()">
+          <div class="chat-pill-meta">
+            <strong>Exam Cell Notices</strong>
+            <span>Click to link</span>
           </div>
+          <span style="font-size: 9px; color: var(--wa-text-muted);">ADD</span>
         </div>
       </div>
 
-      <!-- Section: Watched Triage Keywords -->
       <div class="sidebar-card">
-        <div class="sidebar-section-title">Watched Priority Filters</div>
+        <div class="sidebar-section-title">Priority Watch Filters</div>
         <div class="kw-tag-cloud">
-          <span class="kw-tag kw-high">🔴 ASD</span>
-          <span class="kw-tag kw-high">🔴 Ashish</span>
+          <span class="kw-tag kw-high">ASD</span>
+          <span class="kw-tag kw-high">Ashish</span>
           <span class="kw-tag">exam</span>
           <span class="kw-tag">datesheet</span>
           <span class="kw-tag">sessional</span>
@@ -970,8 +855,6 @@
           <span class="kw-tag">incharge</span>
           <span class="kw-tag">syllabus</span>
           <span class="kw-tag">meeting</span>
-          <span class="kw-tag">attendance</span>
-          <span class="kw-tag">defaulter</span>
           <span class="kw-tag">marks</span>
           <span class="kw-tag">circular</span>
         </div>
@@ -982,13 +865,13 @@
     <!-- Main Content Panel -->
     <main class="main-pane">
 
-      <!-- 1-Click Incremental Catch-Up Bar -->
+      <!-- Slim 1-Click Incremental Catch-Up Bar -->
       <div class="sync-bar">
         <div class="sync-info">
           <div class="sync-icon-circle">⚡</div>
           <div class="sync-meta">
             <h3>Incremental Catch-Up Sync</h3>
-            <p id="last-sync-label">Last scanned: 23 Nov 2026, 14:15 &bull; Scans all new updates from last check point</p>
+            <p id="last-sync-label">Last scanned: 23 Nov 2026, 14:15 &bull; Scans new updates from last check point</p>
           </div>
         </div>
         <div class="sync-actions">
@@ -1004,32 +887,24 @@
         </div>
       </div>
 
-      <!-- Live Multi-Channel Stream with "Convert to Task" Buttons -->
+      <!-- Live Multi-Channel Stream -->
       <div class="wa-card">
         <div class="wa-card-header">
           <h2><span>📬</span> Incoming Stream (WhatsApp &bull; Outlook &bull; Gmail)</h2>
-          <span style="font-size: 11px; font-weight: 700; color: var(--wa-green);">Auto-Parsed by Antigravity AI</span>
+          <span style="font-size: 10px; font-weight: 700; color: var(--wa-green);">Auto-Triage Active</span>
         </div>
         <div class="wa-card-body">
-          <div class="ai-banner-strip">
-            <div class="ai-banner-left">
-              <span class="ai-badge">AI COPILOT</span>
-              <span><strong>Antigravity Triage Engine Active:</strong> Circulars and messages automatically analyzed for deadlines and action items. Click <em>Convert to Task</em> on any item.</span>
-            </div>
-            <button class="wa-btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="alert('Antigravity AI is continuously analyzing documents.')">AI Settings</button>
-          </div>
-
           <div class="stream-list" id="stream-container">
 
-            <!-- Stream Item 1: WhatsApp -->
+            <!-- Stream Item 1 -->
             <div class="stream-item">
               <div class="stream-item-header">
                 <div class="stream-source-chip">
                   <span style="color: #25d366;">💬 WhatsApp</span> &bull; <strong>Mentors BCA</strong> &bull; HOD
                 </div>
-                <div class="stream-badges">
+                <div>
                   <span class="priority-tag high">🔴 HIGH</span>
-                  <span style="font-size: 11px; color: var(--wa-text-muted);">23 Nov 2026, 13:32</span>
+                  <span style="font-size: 10px; color: var(--wa-text-muted); margin-left: 4px;">13:32</span>
                 </div>
               </div>
               <div class="stream-content">
@@ -1043,19 +918,19 @@
               </div>
             </div>
 
-            <!-- Stream Item 2: Outlook Email -->
+            <!-- Stream Item 2 -->
             <div class="stream-item">
               <div class="stream-item-header">
                 <div class="stream-source-chip">
                   <span style="color: #0078d4;">✉️ Outlook</span> &bull; <strong>Principal Office DPGITM</strong>
                 </div>
-                <div class="stream-badges">
+                <div>
                   <span class="priority-tag high">🔴 HIGH</span>
-                  <span style="font-size: 11px; color: var(--wa-text-muted);">23 Nov 2026, 12:45</span>
+                  <span style="font-size: 10px; color: var(--wa-text-muted); margin-left: 4px;">12:45</span>
                 </div>
               </div>
               <div class="stream-content">
-                <strong>Subject: Submission of Teaching Load Allocation & Sessional Paper Drafts (BCA Dec 2026).</strong> All lab incharge faculty must verify hardware and software readiness and submit lab syllabus status by 28th Nov.
+                <strong>Submission of Teaching Load & Sessional Paper Drafts (BCA Dec 2026).</strong> All lab incharge faculty must verify hardware and software readiness and submit syllabus status by 28th Nov.
               </div>
               <div class="stream-meta-row">
                 <div class="deadline-chip">⏰ Deadline: 28th Nov 2026</div>
@@ -1065,42 +940,40 @@
               </div>
             </div>
 
-            <!-- Stream Item 3: WhatsApp with Document -->
+            <!-- Stream Item 3 -->
             <div class="stream-item">
               <div class="stream-item-header">
                 <div class="stream-source-chip">
                   <span style="color: #25d366;">💬 WhatsApp</span> &bull; <strong>Mentors BCA</strong> &bull; Exam Controller
                 </div>
-                <div class="stream-badges">
+                <div>
                   <span class="priority-tag normal">🟡 NORMAL</span>
-                  <span style="font-size: 11px; color: var(--wa-text-muted);">23 Nov 2026, 11:20</span>
+                  <span style="font-size: 10px; color: var(--wa-text-muted); margin-left: 4px;">11:20</span>
                 </div>
               </div>
               <div class="stream-content">
                 Attached revised sessional examination datesheet for BCA 1st, 3rd and 5th Semester. Cross-verify class room invigilation schedule.
-                <div style="margin-top: 6px;">
-                  <a class="file-pill" href="file:///Users/ashishdhillon/Academic-DPG/Department%20Desk/Notices">
-                    📄 Sessional_Datesheet_Dec2026.pdf
-                  </a>
-                </div>
+                <span style="margin-left: 6px;">
+                  <a class="file-pill" href="file:///Users/ashishdhillon/Academic-DPG/Department%20Desk/Notices">📄 Datesheet.pdf</a>
+                </span>
               </div>
               <div class="stream-meta-row">
                 <div class="deadline-chip">⏰ Deadline: 25th Nov 2026</div>
-                <button class="btn-convert-task" onclick="convertStreamItemToTask(this, 'Review BCA Sessional datesheet and cross-verify invigilation duty dates', '25th Nov 2026', 'NORMAL', 'Mentors BCA')">
+                <button class="btn-convert-task" onclick="convertStreamItemToTask(this, 'Review BCA Sessional datesheet & verify duty dates', '25th Nov 2026', 'NORMAL', 'Mentors BCA')">
                   ➕ Convert to Task
                 </button>
               </div>
             </div>
 
-            <!-- Stream Item 4: Gmail -->
+            <!-- Stream Item 4 -->
             <div class="stream-item">
               <div class="stream-item-header">
                 <div class="stream-source-chip">
                   <span style="color: #ea4335;">📧 Gmail</span> &bull; <strong>MDU Rohtak Examination Branch</strong>
                 </div>
-                <div class="stream-badges">
+                <div>
                   <span class="priority-tag normal">🟡 NORMAL</span>
-                  <span style="font-size: 11px; color: var(--wa-text-muted);">23 Nov 2026, 10:15</span>
+                  <span style="font-size: 10px; color: var(--wa-text-muted); margin-left: 4px;">10:15</span>
                 </div>
               </div>
               <div class="stream-content">
@@ -1108,7 +981,7 @@
               </div>
               <div class="stream-meta-row">
                 <div class="deadline-chip">⏰ Deadline: 30th Nov 2026</div>
-                <button class="btn-convert-task" onclick="convertStreamItemToTask(this, 'Download MDU BCA Practical cutlist and check eligible student roll numbers', '30th Nov 2026', 'NORMAL', 'MDU Gmail')">
+                <button class="btn-convert-task" onclick="convertStreamItemToTask(this, 'Download MDU BCA Practical cutlist and check eligible roll numbers', '30th Nov 2026', 'NORMAL', 'MDU Gmail')">
                   ➕ Convert to Task
                 </button>
               </div>
@@ -1122,18 +995,18 @@
       <div class="wa-card">
         <div class="wa-card-header">
           <h2><span>✅</span> ASD Action Checklist (Faculty Task Board)</h2>
-          <span style="font-size: 11px; font-weight: 700; color: var(--wa-text-muted);">Auto-Sorted Tasks</span>
+          <span style="font-size: 10px; font-weight: 700; color: var(--wa-text-muted);">Auto-Sorted Tasks</span>
         </div>
         <div class="wa-card-body" style="padding: 0;">
           <table class="checklist-table">
             <thead>
               <tr>
-                <th style="width: 50px; text-align: center;">Done</th>
-                <th style="width: 80px;">Priority</th>
+                <th style="width: 36px; text-align: center;">Done</th>
+                <th style="width: 70px;">Priority</th>
                 <th>Task / Action Description</th>
-                <th style="width: 130px;">Deadline</th>
-                <th style="width: 140px;">Source</th>
-                <th style="width: 120px;">Attachment</th>
+                <th style="width: 100px;">Deadline</th>
+                <th style="width: 110px;">Source</th>
+                <th style="width: 90px;">File</th>
               </tr>
             </thead>
             <tbody id="task-table-body">
@@ -1152,7 +1025,7 @@
                   <input type="checkbox" class="task-checkbox" onchange="toggleTaskRow(this)">
                 </td>
                 <td><span class="priority-tag high">🔴 HIGH</span></td>
-                <td>Verify BCA Lab hardware/software readiness and submit lab syllabus completion status.</td>
+                <td>Verify BCA Lab hardware/software readiness and submit lab syllabus status report.</td>
                 <td><span style="color: var(--wa-warning); font-weight: 700;">28th Nov</span></td>
                 <td>Principal Outlook</td>
                 <td><span style="color: var(--wa-text-muted);">None</span></td>
@@ -1165,11 +1038,7 @@
                 <td>Review sessional datesheet and synchronize lecture plans in Academic-DPG course files.</td>
                 <td><span style="color: var(--wa-warning); font-weight: 700;">25th Nov</span></td>
                 <td>Mentors BCA</td>
-                <td>
-                  <a class="file-pill" href="file:///Users/ashishdhillon/Academic-DPG/Department%20Desk/Notices">
-                    📄 Datesheet.pdf
-                  </a>
-                </td>
+                <td><a class="file-pill" href="file:///Users/ashishdhillon/Academic-DPG/Department%20Desk/Notices">📄 Datesheet</a></td>
               </tr>
             </tbody>
           </table>
@@ -1179,18 +1048,15 @@
     </main>
   </div>
 
-  <!-- Bottom App Footer -->
+  <!-- Slim Footer -->
   <footer class="wa-footer">
+    <div>FacultySync &bull; Universal Academic Multi-Channel Desk &bull; Ashish Dhillon (ASD)</div>
     <div>
-      <strong>FacultySync &bull; Universal Academic Multi-Channel Desk</strong> &bull; Open-Source for College Faculty &bull; Built by Ashish Dhillon (ASD)
-    </div>
-    <div>
-      Repository: <a class="wa-link" href="https://github.com/ashishdhillon/facultysync" target="_blank">github.com/ashishdhillon/facultysync</a> &bull;
-      Local Docs: <a class="wa-link" href="file:///Users/ashishdhillon/Academic-DPG/Department%20Desk/Notices">Academic-DPG</a>
+      <a class="wa-link" href="https://github.com/ashishdhillon/facultysync" target="_blank">github.com/ashishdhillon/facultysync</a>
     </div>
   </footer>
 
-  <!-- Modal for Active WhatsApp Chat Selector -->
+  <!-- Modal -->
   <div class="modal-overlay" id="chat-selector-modal" onclick="closeChatSelectorModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1198,45 +1064,44 @@
         <button class="modal-close" onclick="closeChatSelectorModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="font-size: 13px; color: var(--wa-text-secondary); margin-bottom: 14px;">
-          Select the active department and mentor groups you wish to triage into your task list:
+        <p style="font-size: 11px; color: var(--wa-text-secondary); margin-bottom: 10px;">
+          Choose department &amp; mentor groups to triage into your task list:
         </p>
 
-        <div style="display: flex; flex-direction: column; gap: 10px;" id="modal-chat-list">
-          <label style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 2px solid var(--wa-border); border-radius: 8px; cursor: pointer;">
-            <input type="checkbox" checked style="accent-color: var(--wa-green); width: 18px; height: 18px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--wa-border); border-radius: 5px; cursor: pointer;">
+            <input type="checkbox" checked style="accent-color: var(--wa-green); width: 15px; height: 15px;">
             <div>
-              <strong>Mentors BCA</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">Primary academic mentor group & notices</div>
+              <strong style="font-size: 12px;">Mentors BCA</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">Primary mentor notices</div>
             </div>
           </label>
 
-          <label style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 2px solid var(--wa-border); border-radius: 8px; cursor: pointer;">
-            <input type="checkbox" checked style="accent-color: var(--wa-green); width: 18px; height: 18px;">
+          <label style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--wa-border); border-radius: 5px; cursor: pointer;">
+            <input type="checkbox" checked style="accent-color: var(--wa-green); width: 15px; height: 15px;">
             <div>
-              <strong>DPGITM Faculty / Academic</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">General institutional circulars and timetable notices</div>
+              <strong style="font-size: 12px;">DPGITM Faculty / Academic</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">Institutional circulars</div>
             </div>
           </label>
 
-          <label style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 2px solid var(--wa-border); border-radius: 8px; cursor: pointer;">
-            <input type="checkbox" checked style="accent-color: var(--wa-green); width: 18px; height: 18px;">
+          <label style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--wa-border); border-radius: 5px; cursor: pointer;">
+            <input type="checkbox" checked style="accent-color: var(--wa-green); width: 15px; height: 15px;">
             <div>
-              <strong>Exam Cell &amp; Conduct Branch</strong>
-              <div style="font-size: 11px; color: var(--wa-text-secondary);">Datesheets, duty allocations, and marks entry windows</div>
+              <strong style="font-size: 12px;">Exam Cell &amp; Conduct Branch</strong>
+              <div style="font-size: 10px; color: var(--wa-text-secondary);">Datesheets &amp; duties</div>
             </div>
           </label>
         </div>
       </div>
       <div class="modal-footer">
         <button class="wa-btn-secondary" onclick="closeChatSelectorModal()">Cancel</button>
-        <button class="btn-sync-catchup" style="padding: 8px 16px;" onclick="saveSelectedChats()">Save Monitored Chats</button>
+        <button class="btn-sync-catchup" style="padding: 4px 10px;" onclick="saveSelectedChats()">Save Chats</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Live Clock
     function updateClock() {
       const now = new Date();
       const options = { 
@@ -1247,13 +1112,11 @@
         minute: '2-digit',
         hour12: false
       };
-      const formatted = now.toLocaleDateString('en-GB', options).replace(',', ' •');
-      document.getElementById('live-datetime').textContent = formatted;
+      document.getElementById('live-datetime').textContent = now.toLocaleDateString('en-GB', options).replace(',', ' •');
     }
     updateClock();
     setInterval(updateClock, 30000);
 
-    // Theme Switcher & Persistence
     function initTheme() {
       const savedTheme = localStorage.getItem('facultysync_theme') || 'light';
       const checkbox = document.getElementById('theme-checkbox');
@@ -1295,69 +1158,40 @@
     }
     initTheme();
 
-    // Catch-Up Sync Button
     function triggerCatchUpSync() {
-      fetch('/api/sync', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-          const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-          document.getElementById('last-sync-label').innerHTML = `<strong>Just scanned:</strong> Today at ${nowStr} &bull; All WhatsApp &amp; Email updates processed up to current timestamp.`;
-          alert("⚡ Catch-Up Scan Complete!\nScanned WhatsApp & Email accounts from the last check point.\nAll new circulars, datesheets, and deadlines are parsed and ready.");
-        })
-        .catch(() => {
-          const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-          document.getElementById('last-sync-label').innerHTML = `<strong>Just scanned:</strong> Today at ${nowStr} &bull; All WhatsApp &amp; Email updates processed up to current timestamp.`;
-          alert("⚡ Catch-Up Scan Complete!\nScanned WhatsApp & Email accounts from the last check point.");
-        });
+      const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('last-sync-label').innerHTML = `<strong>Just scanned:</strong> Today at ${nowStr} &bull; All updates processed up to current timestamp.`;
+      alert("⚡ Catch-Up Scan Complete!\nScanned WhatsApp & Email accounts from the last check point.\nAll new circulars, datesheets, and deadlines are parsed.");
     }
 
-    // Convert Stream Item to Task
     function convertStreamItemToTask(button, taskDesc, deadline, priority, source) {
       if (button.classList.contains('converted')) return;
 
-      fetch('/api/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: taskDesc,
-          deadline: deadline,
-          priority: priority,
-          source: source
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.getElementById('task-table-body');
-        const newRow = document.createElement('tr');
-        const priorityClass = priority === 'HIGH' ? 'high' : 'normal';
-        const priorityBadge = priority === 'HIGH' ? '🔴 HIGH' : '🟡 NORMAL';
+      const tbody = document.getElementById('task-table-body');
+      const newRow = document.createElement('tr');
+      const priorityClass = priority === 'HIGH' ? 'high' : 'normal';
+      const priorityBadge = priority === 'HIGH' ? '🔴 HIGH' : '🟡 NORMAL';
 
-        newRow.innerHTML = `
-          <td style="text-align: center;">
-            <input type="checkbox" class="task-checkbox" onchange="toggleTaskRow(this)">
-          </td>
-          <td><span class="priority-tag ${priorityClass}">${priorityBadge}</span></td>
-          <td><strong>${taskDesc}</strong></td>
-          <td><span style="color: var(--wa-warning); font-weight: 700;">${deadline}</span></td>
-          <td>${source}</td>
-          <td><span style="color: var(--wa-text-muted);">None</span></td>
-        `;
+      newRow.innerHTML = `
+        <td style="text-align: center;">
+          <input type="checkbox" class="task-checkbox" onchange="toggleTaskRow(this)">
+        </td>
+        <td><span class="priority-tag ${priorityClass}">${priorityBadge}</span></td>
+        <td><strong>${taskDesc}</strong></td>
+        <td><span style="color: var(--wa-warning); font-weight: 700;">${deadline}</span></td>
+        <td>${source}</td>
+        <td><span style="color: var(--wa-text-muted);">None</span></td>
+      `;
 
-        tbody.insertBefore(newRow, tbody.firstChild);
-
-        button.classList.add('converted');
-        button.innerHTML = "✓ Added to Tasks";
-        alert("Added to Action Checklist:\n" + taskDesc + " (Due: " + deadline + ")");
-      })
-      .catch(err => {
-        alert("Error adding task: " + err.message);
-      });
+      tbody.insertBefore(newRow, tbody.firstChild);
+      button.classList.add('converted');
+      button.innerHTML = "✓ Added";
     }
 
     function toggleTaskRow(checkbox) {
       const row = checkbox.closest('tr');
       if (checkbox.checked) {
-        row.style.opacity = '0.45';
+        row.style.opacity = '0.4';
         row.style.textDecoration = 'line-through';
       } else {
         row.style.opacity = '1';
@@ -1375,7 +1209,7 @@
 
     function saveSelectedChats() {
       closeChatSelectorModal();
-      alert("Monitored WhatsApp chats updated successfully in config.json!");
+      alert("Monitored WhatsApp chats updated successfully!");
     }
 
     function promptEmailConfig(service) {
