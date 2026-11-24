@@ -472,6 +472,32 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
       return;
     }
 
+    showOutlookChooser();
+  }
+
+  function showOutlookChooser(){
+    openOutlookModal();
+    $("outlookModalBody").innerHTML =
+      '<p style="margin-bottom:12px">How do you want to connect Outlook?</p>' +
+      '<button class="btn" style="width:100%;justify-content:center;margin-bottom:8px" onclick="connectMacMail()">🍎 Use my Mac Mail app (recommended)</button>' +
+      '<p style="font-size:12px;color:var(--muted);margin-bottom:16px">Reads mail that the Mail app has already downloaded. macOS will ask once to let Terminal control Mail. Read-only: it never sends, deletes or marks mail as read.</p>' +
+      '<button class="btn2" style="width:100%;margin-left:0" onclick="startMicrosoftFlow()">Sign in with Microsoft instead</button>';
+  }
+
+  window.connectMacMail = function(){
+    $("outlookModalBody").innerHTML = '<p>Asking Mail for permission… If macOS shows a prompt, click <b>OK</b>/<b>Allow</b>.</p>';
+    fetch("/api/connect/applemail", { method: "POST" }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok && j.ok, res: j }; }); }).then(function(x){
+      if (!x.ok) { throw new Error(x.res.error || "Could not connect to Mail"); }
+      var names = (x.res.accounts || []).map(function(a){ return esc(a.name); }).join(", ");
+      $("outlookModalBody").innerHTML = '<p style="color:var(--wa);font-weight:700">✅ Connected to Mac Mail</p><p style="margin-top:6px;font-size:13px;color:var(--muted)">Accounts found: ' + (names || "none") + '. Press <b>Sync now</b> to read new mail.</p>';
+      load().then(function(){ setTimeout(closeOutlookModal, 2500); toast("Mac Mail connected 🎉"); });
+    }).catch(function(err){
+      $("outlookModalBody").innerHTML = '<p style="color:var(--red)">' + esc(err.message || "Could not connect to Mail") + '</p><button class="btn2" style="margin-left:0;margin-top:10px" onclick="showOutlookChooser2()">Back</button>';
+    });
+  };
+  window.showOutlookChooser2 = function(){ showOutlookChooser(); };
+
+  function startMicrosoftFlow(){
     openOutlookModal();
     $("outlookModalBody").innerHTML = '<p>Initiating Microsoft login...</p>';
 
@@ -529,6 +555,7 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
     }, 4000);
   }
 
+  window.startMicrosoftFlow = startMicrosoftFlow;
   window.saveImapCredentials = function(){
     var email = ($("imapEmail") && $("imapEmail").value || "").trim();
     var pass = ($("imapPass") && $("imapPass").value || "").trim();

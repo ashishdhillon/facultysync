@@ -26,29 +26,38 @@ client.on('qr', (qr) => {
   qrcode.generate(qr, { small: true });
 });
 
+// Read-only: lists chat NAMES and last-activity times only. It never reads or prints message text,
+// never sends anything and never marks chats as read.
+const COLLEGE_HINTS = ['dpg', 'dpgitm', 'bca', 'mca', 'bba', 'b.tech', 'btech', 'computer', 'application', 'department', 'dept',
+  'faculty', 'staff', 'teacher', 'mentor', 'exam', 'hod', 'principal', 'college', 'institute', 'mdu', 'academic', 'sessional',
+  'admission', 'placement', 'internship', 'naac', 'nirf', 'iqac', 'lab', 'class', 'sem', 'section', 'dr.', 'dr ', 'prof', 'sir', 'mam', "ma'am"];
+
 client.on('ready', async () => {
-  console.log('✅ Connected to WhatsApp! Fetching chats...\n');
+  console.log('✅ Connected to WhatsApp! Reading chat names (no message text)...\n');
   try {
-    const chats = await client.getChats();
-    console.log(`Found ${chats.length} total chats.\n`);
+    const chats = (await client.getChats()).filter(c => !c.isStatus && !(c.id && c.id.server === 'broadcast'));
+    chats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    const monitored = (config.monitoredChats || []).filter(m => m && !/^REPLACE_WITH/i.test(m)).map(m => m.toLowerCase());
+    const nameOf = c => c.name || c.formattedTitle || (c.id && c.id.user) || '?';
+    const when = c => c.timestamp ? new Date(c.timestamp * 1000).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+    const isMon = n => monitored.some(m => n.toLowerCase().includes(m));
+    const looksCollege = n => COLLEGE_HINTS.some(h => n.toLowerCase().includes(h));
 
-    console.log('--- 👥 GROUP CHATS ---');
-    const groups = chats.filter(c => c.isGroup);
-    groups.forEach((g, idx) => {
-      console.log(`[${idx + 1}] "${g.name}"`);
-      console.log(`    ID: ${g.id._serialized}`);
-      console.log(`    Unread: ${g.unreadCount}`);
-    });
+    console.log(`Found ${chats.length} chats.\n`);
+    console.log('--- ✅ ALREADY MONITORED (matched by config.json) ---');
+    chats.filter(c => isMon(nameOf(c))).forEach(c => console.log(`  ${c.isGroup ? '👥' : '👤'} "${nameOf(c)}"   last: ${when(c)}`));
+    monitored.forEach(m => { if (!chats.some(c => nameOf(c).toLowerCase().includes(m))) console.log(`  ⚠️  No chat matches "${m}" - check the spelling`); });
 
-    console.log('\n--- 👤 RECENT DIRECT CHATS (Top 10) ---');
-    const direct = chats.filter(c => !c.isGroup).slice(0, 10);
-    direct.forEach((d, idx) => {
-      console.log(`[${idx + 1}] "${d.name || d.formattedTitle || d.id.user}" (ID: ${d.id._serialized})`);
-    });
+    console.log('\n--- 🎓 LOOK COLLEGE-RELATED (suggestions, not monitored yet) ---');
+    chats.filter(c => !isMon(nameOf(c)) && looksCollege(nameOf(c))).slice(0, 25)
+      .forEach(c => console.log(`  ${c.isGroup ? '👥' : '👤'} "${nameOf(c)}"   last: ${when(c)}`));
 
-    console.log('\n💡 Copy the exact group chat names into `config.json` -> `monitoredChats`.');
+    console.log('\n--- 🕒 MOST RECENT GROUPS (top 20) ---');
+    chats.filter(c => c.isGroup && !isMon(nameOf(c))).slice(0, 20).forEach(c => console.log(`  👥 "${nameOf(c)}"   last: ${when(c)}`));
+
+    console.log('\n💡 Copy exact names (or a unique part of them) into config.json -> "monitoredChats".');
   } catch (err) {
-    console.error('Error fetching chats:', err);
+    console.error('Error fetching chats:', err.message);
   } finally {
     await client.destroy();
     process.exit(0);

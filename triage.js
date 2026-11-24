@@ -87,6 +87,12 @@ function findKeywords(text, keywords = []) {
 function extractDeadline(text) {
   if (!text) return 'Not specified / Check notice';
 
+  // Ignore phone numbers (e.g. +91-9000012345) and attachment file names (e.g. DocScanner 29-Jul 12-20 PM.pdf)
+  // so their digits are not mistaken for dates.
+  text = String(text)
+    .replace(/\S*\.(?:pdf|docx?|xlsx?|csv|pptx?|jpe?g|png|zip)\b/gi, ' ')
+    .replace(/\+?\d[\d\s-]{7,}\d/g, ' ');
+
   // 1. Check relative deadlines: "by tomorrow", "by 5 PM", "by today evening", "before Friday"
   const relativeMatch = text.match(/\b(?:by|before|till|within|on or before)\s+([A-Za-z0-9\s,:-]{2,30}?)(?=[.?!,\n]|$)/i);
   if (relativeMatch && relativeMatch[1]) {
@@ -99,7 +105,8 @@ function extractDeadline(text) {
     return dateMatch[0].trim();
   }
 
-  const slashDateMatch = text.match(/\b\d{1,2}[/-]\d{1,2}(?:[/-]\d{2,4})?(?:\s+(?:at|by)\s+\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)?/i);
+  // Day/month like 25/11 or 25-11-2026: day 1-31, month 1-12, not part of a longer number.
+  const slashDateMatch = text.match(/(?<![\d+])(?:0?[1-9]|[12]\d|3[01])[/-](?:0?[1-9]|1[0-2])(?:[/-]\d{2,4})?(?![\d])(?:\s+(?:at|by)\s+\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)?/i);
   if (slashDateMatch) {
     return slashDateMatch[0].trim();
   }

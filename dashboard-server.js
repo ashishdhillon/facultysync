@@ -15,6 +15,7 @@ const { execFile } = require('child_process');
 
 const gmail = require('./connectors/gmail');
 const outlook = require('./connectors/outlook');
+const applemail = require('./connectors/applemail');
 const syncState = require('./connectors/syncState');
 
 const PORT = Number(process.env.PORT) || 8766;
@@ -58,6 +59,18 @@ function saveState(s) {
 
 let syncInProgress = false;
 
+// Mac Mail counts as the "Outlook" channel in the UI when it is connected (or needs a permission fix).
+function macMailOverride(outlookStatus, state) {
+  const a = applemail.getStatus();
+  if (a === 'connected') {
+    return { status: 'connected', lastSync: state.applemail && state.applemail.lastSync, activeRoute: 'Mac Mail (Apple Mail app)' };
+  }
+  if (a === 'reauth_needed' && outlookStatus !== 'connected') {
+    return { status: 'reauth_needed', lastSync: state.applemail && state.applemail.lastSync, activeRoute: 'Mac Mail: allow Terminal to control Mail (System Settings > Privacy & Security > Automation)' };
+  }
+  return null;
+}
+
 const server = http.createServer(async (req, res) => {
   if (!allowed(req)) return send(res, 403, { error: 'bad host or origin' });
   const url = req.url.split('?')[0];
@@ -96,7 +109,7 @@ const server = http.createServer(async (req, res) => {
           status: gStatus,
           lastSync: state.gmail && state.gmail.lastSync
         },
-        outlook: {
+        outlook: macMailOverride(oStatus, state) || {
           status: oStatus,
           lastSync: state.outlook && state.outlook.lastSync,
           activeRoute: outlook.getActiveRouteDescription()
@@ -130,7 +143,10 @@ const server = http.createServer(async (req, res) => {
           }
         } else if (ch === 'outlook') {
           try {
-            results.outlook = await outlook.syncOutlook({ config: cfg });
+            // If Mac Mail is connected it is the Outlook route; otherwise use Graph / IMAP.
+            results.outlook = applemail.getStatus() === 'connected'
+              ? await applemail.syncAppleMail({ config: cfg })
+              : await outlook.syncOutlook({ config: cfg });
           } catch (err) {
             results.outlook = { ok: false, error: err.message };
           }
@@ -171,6 +187,15 @@ const server = http.createServer(async (req, res) => {
       send(res, 400, { error: err.message });
     }
     return;
+  }
+
+  if (req.method === 'POST' && url === '/api/connect/applemail') {
+    try {
+      const r = await applemail.connect({});
+      return send(res, r.ok ? 200 : 400, r);
+    } catch (err) {
+      return send(res, 500, { ok: false, error: err.message });
+    }
   }
 
   if (req.method === 'POST' && url === '/api/connect/outlook') {
