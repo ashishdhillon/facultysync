@@ -144,6 +144,20 @@ const local = iso => { const d = new Date(iso); return `${d.getFullYear()}-${Str
   ok('After 3 PM and before 9 AM every 30 minutes', syncIntervalAt(m, atT([15, 0])) === 30 && syncIntervalAt(m, atT([22, 0])) === 30 && syncIntervalAt(m, atT([8, 59])) === 30);
   ok('Bad window ignored', syncIntervalAt({ syncEveryMinutes: 30, syncHours: [{ from: '9am', to: '3pm', everyMinutes: 5 }] }, atT([10, 0])) === 30);
 
+  console.log('--- Suite 8: Clean titles and reasons (no AI) ---');
+  ok('Names before "kindly" removed, aside cut', T.cleanTitle('Ashish, neha,divya ,Dr. payal kindly send your full papers to Mr. Humanshu, only Abstract has been sent .') === 'Send your full papers to Mr. Humanshu');
+  ok('Prefers the sentence that asks you to act', T.cleanTitle('Urgent meeting convened today at 3:00 PM in Conference Room. ASD please bring the sessional marks report before 4 PM.') === 'Bring the sessional marks report before 4 PM');
+  ok('Greetings removed', T.cleanTitle('Good morning all, Dear faculty please submit attendance of BCA 1st year by Friday.') === 'Submit attendance of BCA 1st year by Friday');
+  ok('A bare file becomes an action', /^Check the shared document: DocScanner/.test(T.cleanTitle('DocScanner 29-Jul-2026 12-20 PM_261123_122145.pdf')));
+  ok('Plain notice kept as is', T.cleanTitle('Poster making syllabus') === 'Poster making syllabus');
+  const why = T.whyOf({ rawText: 'ASD please bring the sessional marks report', priority: 'HIGH' }, { names: ['Ashish', 'ASD'], keywords: ['marks', 'sessional', 'asd'] });
+  ok('Reasons: mentions you, matched words, urgent', why[0] === 'Mentions you' && /marks, sessional/.test(why[1]) && why.includes('Marked urgent'));
+  const st2 = { tasks: [] }; T.syncFromNotices(st2, [{ id: 'z1', timestamp: ref.toISOString(), rawText: 'Dear all, kindly upload marks by Friday', priority: 'NORMAL' }], { names: ['Ashish'], keywords: ['marks'] });
+  ok('New task has clean title and reasons incl. deadline', st2.tasks[0].title === 'Upload marks by Friday' && st2.tasks[0].why.includes('Has a deadline'));
+  const st3 = { tasks: [{ id: 't1', noticeIds: ['z2'], title: 'old raw title', edited: { title: true }, ai: null, source: 'whatsapp' }, { id: 't2', noticeIds: ['z3'], title: 'old raw', edited: {}, ai: null, source: 'whatsapp' }] };
+  T.syncFromNotices(st3, [{ id: 'z2', rawText: 'Pls check the roster' }, { id: 'z3', rawText: 'Pls check the roster' }]);
+  ok('Upgrade keeps your edited title, cleans untouched ones', st3.tasks[0].title === 'old raw title' && st3.tasks[1].title === 'Check the roster');
+
   console.log(`\nMy Day Test Summary: ${passed}/${passed} Passed`);
   process.exit(0);
 })().catch(e => { console.error('❌ My Day test failed:', e.message); process.exit(1); });

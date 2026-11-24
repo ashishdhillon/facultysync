@@ -5,3 +5,6 @@ data/
 config.json
 .DS_Store
 *.log
+
+# Impeccable design skill (installed per project, not part of this repo)
+.claude/skills/impeccable/
