@@ -91,13 +91,33 @@
     "headless": true
   },
   "gmail": {
-    "senderDomains": [".ac.in", ".edu", "mdurohtak.ac.in"],
+    "senderDomains": [
+      ".ac.in",
+      ".edu",
+      "mdurohtak.ac.in"
+    ],
     "extraSenders": [],
     "maxPerSync": 100
   },
   "outlook": {
-    "senderDomains": [".ac.in", ".edu", "mdurohtak.ac.in"],
+    "senderDomains": [
+      ".ac.in",
+      ".edu",
+      "mdurohtak.ac.in"
+    ],
     "extraSenders": [],
     "maxPerSync": 100
+  },
+  "myDay": {
+    "syncEveryMinutes": 15,
+    "briefTime": "08:30",
+    "remindMinutesBefore": 120,
+    "whatsappCatchUpHours": 24,
+    "aiEnabled": true,
+    "ai": {
+      "provider": "",
+      "model": ""
+    },
+    "aboutMe": "Your role, e.g. Assistant Professor, Computer Applications"
   }
 }

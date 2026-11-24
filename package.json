@@ -1,16 +1,17 @@
 {
-  "name": "whatsapp-bridge",
+  "name": "my-day",
   "version": "1.0.0",
-  "description": "",
+  "description": "My Day: WhatsApp, Gmail and Outlook notices turned into one task list and a daily plan. Local, read-only.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "gui": "bash open-gui.command",
     "test-triage": "node test-triage.js",
     "test-connectors": "node test-connectors.js",
-    "test-oauth": "node test-oauth.js && node test-applemail.js",
-    "test-applemail": "node test-applemail.js",
-    "test": "node test-triage.js && node test-connectors.js && node test-oauth.js && node test-applemail.js",
+    "test-oauth": "node test-oauth.js && node test-applemail.js && node test-myday.js",
+    "test-applemail": "node test-applemail.js && node test-myday.js",
+    "test-myday": "node test-myday.js",
+    "test": "node test-triage.js && node test-connectors.js && node test-oauth.js && node test-applemail.js && node test-myday.js",
     "list-chats": "node list-chats.js",
     "reset-session": "rm -rf .wwebjs_auth .wwebjs_cache"
   },

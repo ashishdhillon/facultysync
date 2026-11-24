@@ -2,8 +2,8 @@
 cd "$(dirname "$0")"
 clear
 echo "==============================================================="
-echo "   🎓 DPGITM Academic WhatsApp Live Bridge"
-echo "   Owner: Ashish Dhillon (ASD)"
+echo "   ☀️  My Day · WhatsApp bridge (read-only)"
+echo "   Leave this window open. Close it to stop reading WhatsApp."
 echo "==============================================================="
 echo "Starting Node.js WhatsApp Bridge..."
 echo ""

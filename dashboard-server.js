@@ -1,5 +1,5 @@
 /**
- * Local dashboard server for the WhatsApp bridge.
+ * My Day local server (WhatsApp + Gmail + Outlook -> one task list and a daily plan).
  * Serves bridge-dashboard.html and the real notices from data/notices_log.json.
  * Binds to 127.0.0.1 only. Read-only apart from data/dashboard_state.json
  * (last-seen time and which tasks are ticked) and "open notices folder".
@@ -17,6 +17,11 @@ const gmail = require('./connectors/gmail');
 const outlook = require('./connectors/outlook');
 const applemail = require('./connectors/applemail');
 const syncState = require('./connectors/syncState');
+const tasksLib = require('./lib/tasks');
+const ai = require('./lib/ai');
+const ics = require('./lib/ics');
+const myday = require('./lib/myday');
+const { sendNotification } = require('./notifier');
 
 const PORT = Number(process.env.PORT) || 8766;
 const HERE = __dirname;
@@ -58,6 +63,30 @@ function saveState(s) {
 }
 
 let syncInProgress = false;
+
+/** Mail sync + task refresh + AI. One at a time. */
+async function runSync(channels) {
+  if (syncInProgress) return { busy: true };
+  syncInProgress = true;
+  const results = {};
+  try {
+    const cfg = config();
+    const target = channels && channels.length ? channels.filter(c => c === 'gmail' || c === 'outlook') : ['gmail', 'outlook'];
+    for (const ch of target) {
+      try {
+        if (ch === 'gmail') results.gmail = await gmail.syncGmail({ config: cfg });
+        else results.outlook = applemail.getStatus() === 'connected'
+          ? await applemail.syncAppleMail({ config: cfg })
+          : await outlook.syncOutlook({ config: cfg });
+      } catch (err) { results[ch] = { ok: false, error: err.message }; }
+    }
+    results.tasks = { created: myday.refreshTasks(cfg).created };
+    results.ai = await myday.enrichTasks(cfg);
+    return { ok: true, results };
+  } finally {
+    syncInProgress = false;
+  }
+}
 
 // Mac Mail counts as the "Outlook" channel in the UI when it is connected (or needs a permission fix).
 function macMailOverride(outlookStatus, state) {
@@ -123,41 +152,75 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && url === '/api/sync') {
     return readBody(req, async (b) => {
       if (b === null) return send(res, 400, { error: 'bad json' });
-      // One sync at a time: overlapping runs could fetch the same mail twice or move a cursor backwards.
-      if (syncInProgress) return send(res, 409, { ok: false, error: 'A sync is already running. Try again in a moment.' });
-      syncInProgress = true;
-      try {
-      const targetChannels = Array.isArray(b.channels) && b.channels.length > 0
-        ? b.channels.filter(c => c === 'gmail' || c === 'outlook')
-        : ['gmail', 'outlook'];
-
-      const results = {};
-      const cfg = config();
-
-      for (const ch of targetChannels) {
-        if (ch === 'gmail') {
-          try {
-            results.gmail = await gmail.syncGmail({ config: cfg });
-          } catch (err) {
-            results.gmail = { ok: false, error: err.message };
-          }
-        } else if (ch === 'outlook') {
-          try {
-            // If Mac Mail is connected it is the Outlook route; otherwise use Graph / IMAP.
-            results.outlook = applemail.getStatus() === 'connected'
-              ? await applemail.syncAppleMail({ config: cfg })
-              : await outlook.syncOutlook({ config: cfg });
-          } catch (err) {
-            results.outlook = { ok: false, error: err.message };
-          }
-        }
-      }
-
-      send(res, 200, { ok: true, results });
-      } finally {
-        syncInProgress = false;
-      }
+      const r = await runSync(Array.isArray(b.channels) ? b.channels : null);
+      if (r.busy) return send(res, 409, { ok: false, error: 'A sync is already running. Try again in a moment.' });
+      send(res, 200, r);
     });
+  }
+
+  // ---------------------------------------------------------------- My Day
+  if (req.method === 'GET' && url === '/api/myday') {
+    try {
+      const cfg = config();
+      myday.refreshTasks(cfg);
+      const { store, buckets, timetable, projects } = myday.todayContext(cfg);
+      const ids = {}; Object.keys(buckets).forEach(k => { ids[k] = buckets[k].map(t => t.id); });
+      return send(res, 200, {
+        owner: typeof cfg.ownerName === 'string' ? cfg.ownerName.slice(0, 40) : '',
+        now: new Date().toISOString(),
+        tasks: store.tasks, buckets: ids,
+        brief: myday.readBrief(),
+        ai: Object.assign(await ai.status(cfg), myday.aiInfo(), { enabled: myday.md(cfg).aiEnabled }),
+        timetable, projects,
+        settings: { briefTime: myday.md(cfg).briefTime, syncEveryMinutes: myday.md(cfg).syncEveryMinutes },
+        syncing: syncInProgress
+      });
+    } catch (err) { return send(res, 500, { error: err.message }); }
+  }
+  if (req.method === 'POST' && url === '/api/tasks/update') {
+    return readBody(req, (b) => {
+      if (!b || typeof b.id !== 'string') return send(res, 400, { error: 'bad request' });
+      const store = tasksLib.load(); const t = tasksLib.update(store, b.id, b.patch);
+      if (!t) return send(res, 404, { error: 'task not found' });
+      tasksLib.save(store); send(res, 200, { ok: true, task: t });
+    });
+  }
+  if (req.method === 'POST' && url === '/api/tasks/add') {
+    return readBody(req, (b) => {
+      const store = tasksLib.load(); const t = tasksLib.add(store, b || {});
+      if (!t) return send(res, 400, { error: 'A task needs a title' });
+      tasksLib.save(store); send(res, 200, { ok: true, task: t });
+    });
+  }
+  if (req.method === 'POST' && url === '/api/tasks/delete') {
+    return readBody(req, (b) => {
+      const store = tasksLib.load();
+      if (!b || !tasksLib.remove(store, b.id)) return send(res, 400, { error: 'Only tasks you added yourself can be deleted. Mark others as done.' });
+      tasksLib.save(store); send(res, 200, { ok: true });
+    });
+  }
+  if (req.method === 'POST' && url === '/api/brief') {
+    try { return send(res, 200, { ok: true, brief: await myday.makeBrief(config(), { force: true }) }); }
+    catch (err) { return send(res, 500, { error: err.message }); }
+  }
+  if (req.method === 'POST' && url === '/api/ai/key') {
+    return readBody(req, async (b) => {
+      try {
+        if (!b) return send(res, 400, { error: 'bad json' });
+        await ai.setKey(b.provider, b.key);
+        send(res, 200, { ok: true, status: await ai.status(config()) });
+      } catch (err) { send(res, 400, { ok: false, error: err.message }); }
+    });
+  }
+  if (req.method === 'POST' && url === '/api/ai/forget') {
+    return readBody(req, async (b) => {
+      await ai.forgetKey(b && b.provider);
+      send(res, 200, { ok: true, status: await ai.status(config()) });
+    });
+  }
+  if (req.method === 'GET' && url === '/api/calendar.ics') {
+    res.writeHead(200, { 'Content-Type': 'text/calendar; charset=utf-8', 'Content-Disposition': 'attachment; filename="my-day.ics"', 'Cache-Control': 'no-store' });
+    return res.end(ics.build(tasksLib.load().tasks));
   }
 
   if (req.method === 'POST' && url === '/api/connect/gmail') {
@@ -278,7 +341,15 @@ const server = http.createServer(async (req, res) => {
   send(res, 404, { error: 'not found' });
 });
 
-server.listen(PORT, '127.0.0.1', () => console.log(`FacultySync dashboard: http://127.0.0.1:${PORT}`));
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`☀️  My Day: http://127.0.0.1:${PORT}`);
+  if (process.env.MYDAY_NO_SCHEDULER !== '1') {
+    myday.startScheduler(config, {
+      sync: () => runSync(null),
+      notify: (title, message) => { const c = config(); if (c.notifications && c.notifications.enabled) sendNotification({ title: 'My Day', subtitle: title, message, sound: c.notifications.sound || 'Hero' }); }
+    });
+  }
+});
 server.on('error', (e) => {
   console.error(e.code === 'EADDRINUSE' ? `Port ${PORT} is already in use (dashboard may already be running).` : e.message);
   process.exit(1);

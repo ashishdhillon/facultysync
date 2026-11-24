@@ -1,3 +1,18 @@
+# ☀️ My Day
+
+**My Day** turns WhatsApp group notices, Gmail and Outlook mail into one task list with deadlines, plus a short daily plan (optionally written by AI). It runs locally on your Mac and only ever **reads** messages.
+
+**Start:** double-click `My Day.command` in the Dashboard folder. It restarts the My Day server, starts the WhatsApp bridge in its own Terminal window if needed, and opens http://127.0.0.1:8766.
+
+- **Today view:** Overdue · Today · Needs attention · Later this week · Snoozed · Done. Tick, edit, snooze or add tasks.
+- **Plan my day:** a short plan from your tasks, today's classes (`data/timetable.json`, see `timetable.example.json`) and Rang Board projects (read-only).
+- **AI (optional):** Settings → paste a Gemini or Claude API key (stored in the macOS Keychain). Without a key, simple rules are used.
+- **Automatic:** syncs every 15 minutes, writes the plan at 08:30, reminds you 2 hours before timed deadlines (change under `myDay` in `config.json`).
+- **Calendar:** sidebar → Export to calendar (`.ics`).
+- **WhatsApp catch-up:** when the bridge starts it reads messages from watched chats that arrived while it was off (up to 24 hours).
+
+---
+
 # 🎓 Academic-DPG WhatsApp Local Bridge (Method 1: Linked Device)
 
 A lightweight, real-time local background companion for **Ashish Dhillon (ASD)** that links as a WhatsApp Web device, monitors specific academic & department chats, filters out casual chatter, downloads incoming notices/documents directly into `Academic-DPG`, and raises instant macOS desktop notifications with action checklists.

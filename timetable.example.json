@@ -1,0 +1,12 @@
+{
+  "_help": "Copy this file to data/timetable.json and fill in your classes. Times are 24-hour HH:MM. Days: Mon Tue Wed Thu Fri Sat Sun.",
+  "Mon": [
+    { "start": "09:30", "end": "10:20", "what": "BCA 3rd yr - Web Application Development", "room": "Room 204" },
+    { "start": "11:10", "end": "12:00", "what": "BCA 1st yr - Programming in C", "room": "Lab 2" }
+  ],
+  "Tue": [],
+  "Wed": [],
+  "Thu": [],
+  "Fri": [],
+  "Sat": []
+}
