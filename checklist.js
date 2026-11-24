@@ -118,7 +118,7 @@ function recordNotice(noticeData, config) {
         logs = [];
       }
     }
-    logs.unshift({
+    logs.unshift(Object.assign({
       id,
       timestamp,
       formattedDate,
@@ -131,7 +131,7 @@ function recordNotice(noticeData, config) {
       deadline,
       savedFile,
       rawText
-    });
+    }, noticeData));
     // Keep max 500 entries in log
     if (logs.length > 500) logs = logs.slice(0, 500);
     fs.writeFileSync(logPath, JSON.stringify(logs, null, 2), 'utf8');

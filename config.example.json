@@ -89,5 +89,15 @@
   "puppeteer": {
     "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "headless": true
+  },
+  "gmail": {
+    "senderDomains": [".ac.in", ".edu", "mdurohtak.ac.in"],
+    "extraSenders": [],
+    "maxPerSync": 100
+  },
+  "outlook": {
+    "senderDomains": [".ac.in", ".edu", "mdurohtak.ac.in"],
+    "extraSenders": [],
+    "maxPerSync": 100
   }
 }

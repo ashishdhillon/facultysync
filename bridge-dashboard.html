@@ -104,10 +104,11 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
 .day{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 14px 4px}
 .item{display:grid;grid-template-columns:42px 1fr;gap:14px;padding:12px 14px;border-radius:16px}
 .item:hover{background:var(--sky)}
-.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:19px}
+.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;font-size:19px;flex:none}
 .meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:12.5px;color:var(--muted)}
 .meta strong{color:var(--ink)}
 .new{background:var(--wa);color:#fff;border-radius:999px;padding:1px 9px;font-size:10.5px;font-weight:800;letter-spacing:.04em}
+.subj{font-weight:700;color:var(--ink);margin-top:2px;font-size:13.5px}
 .body{margin-top:4px}
 .file{display:inline-flex;gap:6px;margin-top:8px;background:var(--file-soft);color:#B8610A;border-radius:10px;padding:4px 12px;font-size:12px;font-weight:600}
 .empty{padding:30px;text-align:center;color:var(--muted)}
@@ -138,12 +139,12 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
 .promo .gift{font-size:34px}
 .promo b{display:block;font-size:14px}.promo p{font-size:12.5px;color:#4B5E8F;margin:3px 0 10px}
 .bar2{height:9px;background:rgba(255,255,255,.8);border-radius:999px;overflow:hidden}
-.bar2 i{display:block;height:100%;background:var(--blue);border-radius:999px}
+.bar2 i{display:block;height:100%;background:var(--blue);border-radius:999px;transition:width .4s}
 .promo small{font-size:11.5px;color:#4B5E8F}
 
 .modal{position:fixed;inset:0;background:rgba(18,48,107,.35);backdrop-filter:blur(3px);display:none;place-items:center;z-index:20;padding:20px}
 .modal.on{display:grid}
-.mb{background:#fff;border-radius:24px;max-width:440px;width:100%;padding:28px;box-shadow:var(--shadow)}
+.mb{background:#fff;border-radius:24px;max-width:480px;width:100%;padding:28px;box-shadow:var(--shadow)}
 .mb h3{font-size:18px;margin-bottom:10px}.mb p{color:var(--muted);line-height:1.6;font-size:13.5px}.mb .btn{margin-top:18px}
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--blue);color:#fff;border-radius:999px;padding:12px 22px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:30;box-shadow:0 10px 24px rgba(31,111,235,.4)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -257,37 +258,61 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
       <div class="kw" id="kw"></div>
     </div>
 
-    <div class="promo">
+    <div class="promo" id="promoCard">
       <div class="gift">🎁</div>
-      <div style="flex:1"><b>Connect Gmail &amp; Outlook</b><p>One tap sync for every account, coming next.</p><div class="bar2"><i style="width:33%"></i></div><small>1 of 3 channels connected</small></div>
+      <div style="flex:1">
+        <b id="promoTitle">Connect Gmail &amp; Outlook</b>
+        <p id="promoDesc">One tap sync for every account.</p>
+        <div class="bar2"><i id="promoBar" style="width:33%"></i></div>
+        <small id="promoCount">1 of 3 channels connected</small>
+      </div>
     </div>
   </aside>
 </div>
 
+<!-- Modal for WhatsApp chats instruction -->
 <div class="modal" id="modal" onclick="closeModal()"><div class="mb" onclick="event.stopPropagation()">
   <h3>Choose which chats to watch</h3>
   <p>Chats are listed in <code>whatsapp-bridge/config.json</code> under <code>monitoredChats</code>, using the exact group names. The bridge reloads the file live, so there is no restart.<br><br>To see your exact names, run <code>npm run list-chats</code> in the whatsapp-bridge folder.</p>
   <button class="btn" onclick="closeModal()">Got it</button>
 </div></div>
+
+<!-- Modal for Outlook connect / device code -->
+<div class="modal" id="outlookModal" onclick="closeOutlookModal()"><div class="mb" onclick="event.stopPropagation()">
+  <h3>Connect Microsoft Outlook</h3>
+  <div id="outlookModalBody">
+    <p>Starting device-code authentication...</p>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+    <button class="btn2" onclick="closeOutlookModal()">Close</button>
+  </div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
-  var DATA=null;
+  var DATA = null;
+  var CHANNELS = {
+    whatsapp: { status: 'connected' },
+    gmail: { status: 'not_connected' },
+    outlook: { status: 'not_connected' }
+  };
+
   function $(i){return document.getElementById(i)}
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
   function api(p,o){return fetch(p,o).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})}
   function post(b){return api("/api/state",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})}
-  function isNew(n){var s=DATA.state.lastSeen;return !s||new Date(n.timestamp)>new Date(s)}
+  function isNew(n){var s=DATA&&DATA.state&&DATA.state.lastSeen;return !s||new Date(n.timestamp)>new Date(s)}
   function timeOf(ts){var d=new Date(ts);return isNaN(d)?"":d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:false})}
   function startOf(d){var x=new Date(d);x.setHours(0,0,0,0);return x}
   function dayKey(ts){var d=new Date(ts);if(isNaN(d))return"Earlier";var diff=Math.round((startOf(new Date())-startOf(d))/864e5);return diff===0?"Today":diff===1?"Yesterday":d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"})}
   function hasDeadline(n){return n.deadline&&!/^Not specified/i.test(n.deadline)}
-  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove("on")},2600)}
-  function match(n,q){return !q||[n.chatName,n.sender,n.rawText,n.summary,n.category].join(" ").toLowerCase().indexOf(q)>=0}
+  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove("on")},3200)}
+  function match(n,q){return !q||[n.chatName,n.sender,n.subject,n.rawText,n.summary,n.category,n.snippet].join(" ").toLowerCase().indexOf(q)>=0}
 
-  window.render=function(){
+  window.render = function(){
     if(!DATA)return;
     var q=($("q").value||"").trim().toLowerCase();
     var all=DATA.notices.slice().sort(function(a,b){return new Date(b.timestamp)-new Date(a.timestamp)});
@@ -310,14 +335,49 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
     if(top){c.hidden=false;$("contIc").textContent=top.priority==="HIGH"?"🔥":"📌";$("contT").textContent=top.summary;$("contS").textContent=top.chatName+" · "+(hasDeadline(top)?top.deadline:top.actionRequired);
       $("contBtn").onclick=function(){var o={};o[top.id]=true;post({done:o}).then(load).then(function(){toast("Nice one! ✅")})}}else c.hidden=true;
 
-    var files=all.filter(function(n){return n.savedFile}).length;
+    // Real channels status
+    var gSt = (CHANNELS.gmail && CHANNELS.gmail.status) || 'not_connected';
+    var oSt = (CHANNELS.outlook && CHANNELS.outlook.status) || 'not_connected';
+
+    var gSub = gSt === 'connected' ? 'Connected' : (gSt === 'reauth_needed' ? 'Reconnect' : 'Connect');
+    var oSub = oSt === 'connected' ? 'Connected' : (oSt === 'reauth_needed' ? 'Reconnect' : 'Connect');
+
+    var files=all.filter(function(n){return n.savedFile || (n.attachmentFileNames && n.attachmentFileNames.length)}).length;
+
     $("tiles").innerHTML=
-      tile("wa","💬","WhatsApp",fresh.length+" new","#22B866","var(--wa-soft)","#timeline")+
-      tile("gm","✉️","Gmail","Connect","#FF6B6B","var(--gm-soft)","",1)+
-      tile("ol","📅","Outlook","Connect","#1F6FEB","var(--ol-soft)","",1)+
+      tile("wa","💬","WhatsApp",fresh.length+" new","#22B866","var(--wa-soft)","")+
+      tile("gm","✉️","Gmail",gSub,"#FF6B6B","var(--gm-soft)","")+
+      tile("ol","📅","Outlook",oSub,"#1F6FEB","var(--ol-soft)","")+
       tile("fl","📄","Documents",files+" saved","#FF9A3D","var(--file-soft)","");
-    Array.prototype.forEach.call(document.querySelectorAll(".tile[data-soon]"),function(b){b.onclick=function(){toast(b.getAttribute("data-soon")+" connection is coming in the next release")}});
-    Array.prototype.forEach.call(document.querySelectorAll(".tile[data-open]"),function(b){b.onclick=openNoticesFolder});
+
+    // Wire clicks on tiles
+    var tWa = $("tiles").children[0];
+    if (tWa) tWa.onclick = function(){ location.hash = "#timeline"; };
+
+    var tGm = $("tiles").children[1];
+    if (tGm) tGm.onclick = handleGmailTileClick;
+
+    var tOl = $("tiles").children[2];
+    if (tOl) tOl.onclick = handleOutlookTileClick;
+
+    var tFl = $("tiles").children[3];
+    if (tFl) tFl.onclick = openNoticesFolder;
+
+    // Promo Card Real Counts
+    var connectedCount = 1 + (gSt === 'connected' ? 1 : 0) + (oSt === 'connected' ? 1 : 0);
+    var pct = Math.round((connectedCount / 3) * 100);
+    $("promoBar").style.width = pct + "%";
+    $("promoCount").textContent = connectedCount + " of 3 channels connected";
+    if (connectedCount === 3) {
+      $("promoTitle").textContent = "All channels active! 🎉";
+      $("promoDesc").textContent = "WhatsApp, Gmail, and Outlook auto-triaging into your checklist.";
+    } else if (connectedCount === 2) {
+      $("promoTitle").textContent = "Almost there! 🚀";
+      $("promoDesc").textContent = (gSt === 'connected' ? 'Outlook' : 'Gmail') + " is ready to connect.";
+    } else {
+      $("promoTitle").textContent = "Connect Gmail & Outlook";
+      $("promoDesc").textContent = "One tap sync for every account.";
+    }
 
     $("tasks").innerHTML=tasks.length?tasks.map(function(n){
       var d=!!DATA.state.done[n.id],hi=n.priority==="HIGH";
@@ -326,8 +386,41 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
 
     $("streamCount").textContent=list.length+(q?" found":" in total");
     var out="",last="";
-    list.forEach(function(n){var k=dayKey(n.timestamp);if(k!==last){out+='<div class="day">'+esc(k)+'</div>';last=k}
-      out+='<div class="item"><div class="av" style="background:var(--wa)">💬</div><div><div class="meta"><strong>'+esc(n.chatName)+'</strong><span>'+esc(n.sender)+'</span><span>'+esc(timeOf(n.timestamp))+'</span>'+(isNew(n)?'<span class="new">NEW</span>':'')+(n.priority==="HIGH"?'<span class="pill high">🔥 High</span>':'')+'</div><div class="body">'+esc(n.rawText||n.summary)+'</div>'+(n.savedFile?'<div class="file">📄 '+esc(String(n.savedFile).split("/").pop())+'</div>':'')+'</div></div>';});
+    list.forEach(function(n){
+      var k=dayKey(n.timestamp);
+      if(k!==last){out+='<div class="day">'+esc(k)+'</div>';last=k}
+
+      // Icon & color by channel
+      var ch = (n.channel || 'whatsapp').toLowerCase();
+      var avBg = "var(--wa)";
+      var avIc = "💬";
+      if (ch === 'gmail') {
+        avBg = "var(--gm)";
+        avIc = "✉️";
+      } else if (ch === 'outlook') {
+        avBg = "var(--ol)";
+        avIc = "📅";
+      }
+
+      var attachFile = n.savedFile ? String(n.savedFile).split("/").pop() : (n.attachmentFileNames && n.attachmentFileNames[0] ? n.attachmentFileNames[0] : null);
+
+      out += '<div class="item">' +
+        '<div class="av" style="background:'+avBg+'">'+avIc+'</div>' +
+        '<div>' +
+          '<div class="meta">' +
+            '<strong>'+esc(n.chatName)+'</strong>' +
+            '<span>'+esc(n.sender)+'</span>' +
+            '<span>'+esc(timeOf(n.timestamp))+'</span>' +
+            (isNew(n)?'<span class="new">NEW</span>':'') +
+            (n.priority==="HIGH"?'<span class="pill high">🔥 High</span>':'') +
+          '</div>' +
+          (n.subject ? '<div class="subj">'+esc(n.subject)+'</div>' : '') +
+          '<div class="body">'+esc(n.snippet || n.rawText || n.summary)+'</div>' +
+          (attachFile ? '<div class="file">📄 '+esc(attachFile)+'</div>' : '') +
+        '</div>' +
+      '</div>';
+    });
+
     $("stream").innerHTML=out||'<div class="empty"><b>'+(q?'No matches':'Nothing here yet')+'</b>'+(q?'Try a different word.':'Start the bridge and add your real chat names in config.json.')+'</div>';
 
     /* progress ring */
@@ -343,23 +436,186 @@ h2.sec small{font-size:13px;color:var(--blue);font-weight:700}
     $("chatList").innerHTML=(DATA.chats||[]).map(function(c){var ph=/^REPLACE_WITH/i.test(c);return '<div class="row"><b>'+(ph?'Not set':esc(c))+'</b><span>'+(ph?'edit config.json':'✓ watching')+'</span></div>'}).join("")||'<div class="row"><span>No chats configured</span></div>';
     $("kw").innerHTML='<span class="hi">ASD</span><span class="hi">Ashish</span>'+(DATA.keywords||[]).filter(function(k){return !/^(asd|ashish)$/i.test(k)}).map(function(k){return '<span>'+esc(k)+'</span>'}).join("");
   };
-  function tile(id,ic,name,sub,col,bg,href,soon){
-    return '<button class="tile" style="background:'+bg+'"'+(soon?' data-soon="'+name+'"':(id==="fl"?' data-open="1"':''))+'><div class="ti" style="background:'+col+'">'+ic+'</div><div><b>'+name+'</b><span>'+sub+'</span></div><span class="ar">›</span></button>';
+
+  function tile(id,ic,name,sub,col,bg,href){
+    return '<button class="tile" style="background:'+bg+'"><div class="ti" style="background:'+col+'">'+ic+'</div><div><b>'+name+'</b><span>'+sub+'</span></div><span class="ar">›</span></button>';
   }
 
-  function load(){return api("/api/notices").then(function(d){DATA=d;render()}).catch(function(e){$("hello").textContent="Can't reach the dashboard";$("heroSub").textContent="Start it with open-whatsapp-dashboard.command ("+e.message+")."})}
-  window.syncNow=function(){var b=$("syncBtn");if(b.classList.contains("busy"))return;b.classList.add("busy");var before=DATA?DATA.notices.length:0;
-    Promise.all([load(),new Promise(function(r){setTimeout(r,700)})]).then(function(){b.classList.remove("busy");var a=DATA?DATA.notices.length-before:0;toast(a>0?"Synced · "+a+" new notice"+(a===1?"":"s")+" 🎉":"Synced · nothing new")})};
+  function handleGmailTileClick(){
+    var gSt = (CHANNELS.gmail && CHANNELS.gmail.status) || 'not_connected';
+    if (gSt === 'connected') {
+      toast("Syncing Gmail...");
+      api("/api/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ channels: ["gmail"] }) })
+        .then(load)
+        .then(function(){ toast("Gmail sync completed ✅"); })
+        .catch(function(e){ toast("Gmail sync error: " + e.message); });
+      return;
+    }
+
+    toast("Opening Google Sign-In in browser...");
+    api("/api/connect/gmail", { method: "POST" }).then(function(res){
+      toast(res.message || "Google sign-in started. Check your browser.");
+      pollChannelsUntilConnected('gmail');
+    }).catch(function(err){
+      toast("Error: " + err.message);
+    });
+  }
+
+  function handleOutlookTileClick(){
+    var oSt = (CHANNELS.outlook && CHANNELS.outlook.status) || 'not_connected';
+    if (oSt === 'connected') {
+      toast("Syncing Outlook...");
+      api("/api/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ channels: ["outlook"] }) })
+        .then(load)
+        .then(function(){ toast("Outlook sync completed ✅"); })
+        .catch(function(e){ toast("Outlook sync error: " + e.message); });
+      return;
+    }
+
+    openOutlookModal();
+    $("outlookModalBody").innerHTML = '<p>Initiating Microsoft login...</p>';
+
+    api("/api/connect/outlook", { method: "POST" }).then(function(res){
+      if (!res.ok) {
+        $("outlookModalBody").innerHTML = '<p style="color:var(--red)">' + esc(res.error || 'Failed to start device flow') + '</p>';
+        return;
+      }
+
+      $("outlookModalBody").innerHTML =
+        '<p style="margin-bottom:12px">Enter this code to connect your Outlook account:</p>' +
+        '<div style="background:var(--sky);padding:14px;border-radius:14px;text-align:center;font-size:24px;font-weight:800;letter-spacing:2px;color:var(--blue);margin-bottom:14px">' + esc(res.userCode) + '</div>' +
+        '<p style="font-size:13px;color:var(--muted);margin-bottom:14px">We have opened <a href="' + esc(res.verificationUri) + '" target="_blank" style="color:var(--blue);font-weight:700">' + esc(res.verificationUri) + '</a> in your browser. Enter the code and approve read-only mail access.</p>' +
+        '<div id="outlookPollStatus" style="font-size:12px;color:var(--blue)">⏳ Waiting for authorization in browser...</div>' +
+        '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">' +
+        '<details style="font-size:12px;color:var(--muted)"><summary style="cursor:pointer;font-weight:700">College tenant blocks third-party apps?</summary>' +
+        '<p style="margin:8px 0">Use an IMAP App Password instead:</p>' +
+        '<input id="imapEmail" placeholder="yourname@college.ac.in" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px">' +
+        '<input id="imapPass" type="password" placeholder="App Password" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px">' +
+        '<button class="btn" style="padding:8px 16px;font-size:12px" onclick="saveImapCredentials()">Save IMAP Password</button>' +
+        '</details>';
+
+      // Start polling
+      pollOutlookDeviceToken(res.deviceCode);
+    }).catch(function(err){
+      $("outlookModalBody").innerHTML = '<p style="color:var(--red)">Error: ' + esc(err.message) + '</p>';
+    });
+  }
+
+  function pollOutlookDeviceToken(deviceCode) {
+    var timer = setInterval(function(){
+      api("/api/connect/outlook/poll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceCode: deviceCode })
+      }).then(function(poll){
+        var st = $("outlookPollStatus");
+        if (poll.status === 'connected') {
+          clearInterval(timer);
+          if (st) st.innerHTML = '<span style="color:var(--wa);font-weight:700">✅ Connected successfully!</span>';
+          load().then(function(){
+            setTimeout(closeOutlookModal, 1500);
+            toast("Outlook connected 🎉");
+          });
+        } else if (poll.status === 'tenant_blocked') {
+          clearInterval(timer);
+          if (st) st.innerHTML = '<span style="color:var(--red)">⚠️ College tenant blocked third-party app consent. Please use IMAP App Password below.</span>';
+        } else if (poll.status === 'error' || poll.status === 'expired') {
+          clearInterval(timer);
+          if (st) st.innerHTML = '<span style="color:var(--red)">⚠️ ' + esc(poll.error || 'Authentication expired') + '</span>';
+        }
+      }).catch(function(){
+        clearInterval(timer);
+      });
+    }, 4000);
+  }
+
+  window.saveImapCredentials = function(){
+    var email = ($("imapEmail") && $("imapEmail").value || "").trim();
+    var pass = ($("imapPass") && $("imapPass").value || "").trim();
+    if (!pass) return toast("Please enter your app password");
+
+    api("/api/connect/outlook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imapPassword: pass, email: email })
+    }).then(function(){
+      closeOutlookModal();
+      load();
+      toast("Outlook IMAP app password saved ✅");
+    }).catch(function(e){
+      toast("Error: " + e.message);
+    });
+  };
+
+  function pollChannelsUntilConnected(channel) {
+    var count = 0;
+    var poller = setInterval(function(){
+      count++;
+      if (count > 30) { clearInterval(poller); return; }
+      api("/api/channels").then(function(ch){
+        CHANNELS = ch;
+        render();
+        if (ch[channel] && ch[channel].status === 'connected') {
+          clearInterval(poller);
+          toast(channel.charAt(0).toUpperCase() + channel.slice(1) + " connected! 🎉");
+          load();
+        }
+      }).catch(function(){});
+    }, 3000);
+  }
+
+  function load(){
+    return Promise.all([
+      api("/api/notices"),
+      api("/api/channels").catch(function(){ return null; })
+    ]).then(function(res){
+      DATA = res[0];
+      if (res[1]) CHANNELS = res[1];
+      render();
+    }).catch(function(e){
+      $("hello").textContent="Can't reach the dashboard";
+      $("heroSub").textContent="Start it with open-gui.command ("+e.message+").";
+    });
+  }
+
+  window.syncNow = function(){
+    var b = $("syncBtn");
+    if (b.classList.contains("busy")) return;
+    b.classList.add("busy");
+    var before = DATA ? DATA.notices.length : 0;
+
+    api("/api/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channels: ["gmail", "outlook"] })
+    })
+    .catch(function(err){ console.warn("Sync error:", err); })
+    .then(function(){ return load(); })
+    .then(function(){
+      b.classList.remove("busy");
+      var a = DATA ? DATA.notices.length - before : 0;
+      toast(a > 0 ? "Synced · " + a + " new notice" + (a === 1 ? "" : "s") + " 🎉" : "Synced · up to date");
+    })
+    .catch(function(){
+      b.classList.remove("busy");
+      toast("Sync completed");
+    });
+  };
+
   window.markAllSeen=function(){post({markSeen:true}).then(load).then(function(){toast("All caught up 🎉")})};
-  document.addEventListener("change",function(e){var id=e.target&&e.target.getAttribute&&e.target.getAttribute("data-id");if(!id)return;var o={};o[id]=e.target.checked;post(  {done:o}).then(load)});
+  document.addEventListener("change",function(e){var id=e.target&&e.target.getAttribute&&e.target.getAttribute("data-id");if(!id)return;var o={};o[id]=e.target.checked;post({done:o}).then(load)});
   window.openNoticesFolder=function(){api("/api/open-folder",{method:"POST"}).catch(function(){toast("Notices folder not found. Check config.json")})};
   window.openModal=function(){$("modal").classList.add("on")};
   window.closeModal=function(){$("modal").classList.remove("on")};
+  window.openOutlookModal=function(){$("outlookModal").classList.add("on")};
+  window.closeOutlookModal=function(){$("outlookModal").classList.remove("on")};
   window.dismissNote=function(){$("waNote").style.display="none";ls("facultysync_note","1")};
   if(ls("facultysync_note")==="1")$("waNote").style.display="none";
-  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeModal();closeOutlookModal();}});
   Array.prototype.forEach.call(document.querySelectorAll(".nav a[href^='#']"),function(a){a.addEventListener("click",function(){if(a.getAttribute("href").length>1){Array.prototype.forEach.call(document.querySelectorAll(".nav a"),function(x){x.classList.remove("on")});a.classList.add("on")}})});
-  load();setInterval(load,15000);
+
+  load();
+  setInterval(load, 15000);
 })();
 </script>
 </body>

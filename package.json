@@ -7,6 +7,9 @@
     "start": "node index.js",
     "gui": "bash open-gui.command",
     "test-triage": "node test-triage.js",
+    "test-connectors": "node test-connectors.js",
+    "test-oauth": "node test-oauth.js",
+    "test": "node test-triage.js && node test-connectors.js && node test-oauth.js",
     "list-chats": "node list-chats.js",
     "reset-session": "rm -rf .wwebjs_auth .wwebjs_cache"
   },
