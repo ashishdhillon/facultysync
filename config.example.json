@@ -109,7 +109,7 @@
     "maxPerSync": 100
   },
   "myDay": {
-    "syncEveryMinutes": 15,
+    "syncEveryMinutes": 30,
     "briefTime": "08:30",
     "remindMinutesBefore": 120,
     "whatsappCatchUpHours": 24,
@@ -118,6 +118,13 @@
       "provider": "",
       "model": ""
     },
-    "aboutMe": "Your role, e.g. Assistant Professor, Computer Applications"
+    "aboutMe": "Your role, e.g. Assistant Professor, Computer Applications",
+    "syncHours": [
+      {
+        "from": "09:00",
+        "to": "15:00",
+        "everyMinutes": 5
+      }
+    ]
   }
 }

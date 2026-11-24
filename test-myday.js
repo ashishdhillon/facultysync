@@ -136,6 +136,14 @@ const local = iso => { const d = new Date(iso); return `${d.getFullYear()}-${Str
   ok('Timed task is a 30-min event in UTC, date-only is all-day', /DTSTART:20261125T100000Z/.test(cal) && /DTSTART;VALUE=DATE:20261128/.test(cal));
   ok('Commas escaped in titles', /Send paper\\, today/.test(cal));
 
+  console.log('--- Suite 7: Sync timing ---');
+  const { syncIntervalAt } = require('./lib/myday');
+  const m = { syncEveryMinutes: 30, syncHours: [{ from: '09:00', to: '15:00', everyMinutes: 5 }] };
+  const atT = h => { const d = new Date('2026-11-24T00:00:00+05:30'); d.setHours(h[0], h[1], 0, 0); return d; };
+  ok('College hours (9:00–2:59 PM) every 5 minutes', syncIntervalAt(m, atT([9, 0])) === 5 && syncIntervalAt(m, atT([12, 30])) === 5 && syncIntervalAt(m, atT([14, 59])) === 5);
+  ok('After 3 PM and before 9 AM every 30 minutes', syncIntervalAt(m, atT([15, 0])) === 30 && syncIntervalAt(m, atT([22, 0])) === 30 && syncIntervalAt(m, atT([8, 59])) === 30);
+  ok('Bad window ignored', syncIntervalAt({ syncEveryMinutes: 30, syncHours: [{ from: '9am', to: '3pm', everyMinutes: 5 }] }, atT([10, 0])) === 30);
+
   console.log(`\nMy Day Test Summary: ${passed}/${passed} Passed`);
   process.exit(0);
 })().catch(e => { console.error('❌ My Day test failed:', e.message); process.exit(1); });

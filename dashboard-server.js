@@ -172,7 +172,7 @@ const server = http.createServer(async (req, res) => {
         brief: myday.readBrief(),
         ai: Object.assign(await ai.status(cfg), myday.aiInfo(), { enabled: myday.md(cfg).aiEnabled }),
         timetable, projects,
-        settings: { briefTime: myday.md(cfg).briefTime, syncEveryMinutes: myday.md(cfg).syncEveryMinutes },
+        settings: { briefTime: myday.md(cfg).briefTime, syncEveryMinutes: myday.md(cfg).syncEveryMinutes, syncHours: myday.md(cfg).syncHours || [] },
         syncing: syncInProgress
       });
     } catch (err) { return send(res, 500, { error: err.message }); }
